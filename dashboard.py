@@ -1,14 +1,13 @@
-import os
-from datetime import datetime
-
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
-import streamlit as st
+
+from datetime import datetime, timezone
 
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -38,63 +37,93 @@ for key, value in DEFAULT_STATE.items():
 
 
 # ============================================================
-# DEMO / INTEGRATION SETTINGS
+# SETTINGS
 # ============================================================
 
-USE_DEMO_DATA = True
+# Real ESP32 / ThingSpeak data is NOT connected yet.
+USE_DEMO_DATA = False
 
 # ThingSpeak settings
 THINGSPEAK_CHANNEL_ID = ""
 THINGSPEAK_READ_API_KEY = ""
-
-# OpenWeather settings
-OPENWEATHER_API_KEY = ""
 
 # YOLO model path
 YOLO_MODEL_PATH = "models/weed_model.pt"
 
 
 # ============================================================
-# SAMPLE / DEMO SENSOR DATA
-# Replace this later with real ESP32 / ThingSpeak data.
+# WEATHER LOCATION
 # ============================================================
 
-DEMO_SENSOR_DATA = {
-    "temperature": 29.0,
-    "humidity": 68.0,
-    "soil_moisture": 42.0,
-    "water_level": 75.0,
-    "rain": False,
-    "pump_status": "OFF",
-}
+# Display name
+WEATHER_CITY = "Vellore"
+
+# Vellore city coordinates
+WEATHER_LATITUDE = 12.9184
+WEATHER_LONGITUDE = 79.1325
+
+# Weather provider
+WEATHER_PROVIDER = "Open-Meteo"
 
 
 # ============================================================
-# HELPER: GET SENSOR DATA
+# HELPER
+# ============================================================
+
+def display_value(value, suffix=""):
+    """
+    Display a value if it exists.
+    Otherwise return N/A.
+    """
+
+    if value is None:
+        return "N/A"
+
+    return f"{value}{suffix}"
+
+
+# ============================================================
+# SENSOR DATA
 # ============================================================
 
 def get_demo_sensor_data():
-    """Temporary demo values."""
+    """
+    Demo sensor data is intentionally disabled.
 
-    return DEMO_SENSOR_DATA.copy()
+    We return N/A instead of fake values.
+    """
+
+    return {
+        "temperature": None,
+        "humidity": None,
+        "soil_moisture": None,
+        "water_level": None,
+        "rain": None,
+        "pump_status": None,
+    }
 
 
 def get_thingspeak_data(channel_id, api_key):
     """
-    Reads latest sensor data from ThingSpeak.
+    Read sensor data from ThingSpeak.
 
-    Expected ThingSpeak fields:
+    Expected fields:
+
     field1 = soil moisture
     field2 = temperature
     field3 = humidity
     field4 = water level
     field5 = rain
     field6 = pump status
-
-    Adjust these mappings to match your actual ThingSpeak setup.
     """
 
-    url = f"https://api.thingspeak.com/channels/{channel_id}/feeds.json"
+    if not channel_id or not api_key:
+        return None
+
+    url = (
+        f"https://api.thingspeak.com/"
+        f"channels/{channel_id}/feeds.json"
+    )
 
     try:
         response = requests.get(
@@ -116,204 +145,337 @@ def get_thingspeak_data(channel_id, api_key):
 
         latest = feeds[-1]
 
-        def to_float(value, default=0.0):
+        def to_float(value):
             try:
                 return float(value)
             except (TypeError, ValueError):
-                return default
+                return None
 
-        sensor_data = {
-            "temperature": to_float(latest.get("field2")),
-            "humidity": to_float(latest.get("field3")),
-            "soil_moisture": to_float(latest.get("field1")),
-            "water_level": to_float(latest.get("field4")),
-            "rain": str(latest.get("field5", "0")).lower() in [
+        rain_value = latest.get("field5")
+
+        if rain_value is None:
+            rain = None
+        else:
+            rain = str(rain_value).lower() in [
                 "1",
                 "true",
                 "yes",
-            ],
-            "pump_status": latest.get("field6", "OFF"),
-        }
+            ]
 
-        return sensor_data
+        return {
+            "temperature": to_float(
+                latest.get("field2")
+            ),
+            "humidity": to_float(
+                latest.get("field3")
+            ),
+            "soil_moisture": to_float(
+                latest.get("field1")
+            ),
+            "water_level": to_float(
+                latest.get("field4")
+            ),
+            "rain": rain,
+            "pump_status": latest.get("field6"),
+        }
 
     except requests.RequestException:
         return None
 
 
 def get_sensor_data():
-    """Use ThingSpeak when configured; otherwise use demo data."""
+    """
+    Use real ThingSpeak data when configured.
+    Otherwise return N/A.
+    """
 
     if (
         not USE_DEMO_DATA
         and THINGSPEAK_CHANNEL_ID
         and THINGSPEAK_READ_API_KEY
     ):
-        data = get_thingspeak_data(
+        sensor_data = get_thingspeak_data(
             THINGSPEAK_CHANNEL_ID,
             THINGSPEAK_READ_API_KEY,
         )
 
-        if data is not None:
-            return data
+        if sensor_data is not None:
+            return sensor_data
 
     return get_demo_sensor_data()
 
 
 # ============================================================
-# WEATHER
+# WEATHER - OPEN-METEO
 # ============================================================
 
-def get_demo_weather():
-    return {
-        "temperature": 29.0,
-        "humidity": 68.0,
-        "rain_probability": 20.0,
-        "wind_speed": 8.0,
-        "description": "Partly cloudy",
+@st.cache_data(ttl=600)
+def get_weather_data(latitude, longitude):
+    """
+    Get current weather + hourly forecast
+    from Open-Meteo.
+
+    Cached for 10 minutes.
+    """
+
+    url = "https://api.open-meteo.com/v1/forecast"
+
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+
+        # Current conditions
+        "current": (
+            "temperature_2m,"
+            "relative_humidity_2m,"
+            "wind_speed_10m,"
+            "weather_code"
+        ),
+
+        # Hourly forecast
+        "hourly": (
+            "temperature_2m,"
+            "precipitation_probability,"
+            "precipitation,"
+            "weather_code"
+        ),
+
+        # Use the location's local timezone
+        "timezone": "auto",
+
+        # Two days gives us enough data
+        # for a complete 24-hour forecast.
+        "forecast_days": 2,
+
+        # Units
+        "temperature_unit": "celsius",
+        "wind_speed_unit": "ms",
+        "precipitation_unit": "mm",
     }
 
-
-def get_openweather_data(api_key, latitude, longitude):
-    """
-    Optional OpenWeather integration.
-
-    Weather API integration can later be connected to the
-    irrigation and spraying decision engines.
-    """
-
-    url = "https://api.openweathermap.org/data/2.5/weather"
-
     try:
+
         response = requests.get(
             url,
-            params={
-                "lat": latitude,
-                "lon": longitude,
-                "appid": api_key,
-                "units": "metric",
-            },
+            params=params,
             timeout=10,
         )
 
         response.raise_for_status()
+
         data = response.json()
 
-        return {
-            "temperature": data["main"]["temp"],
-            "humidity": data["main"]["humidity"],
-            "rain_probability": 0,
-            "wind_speed": data["wind"]["speed"],
-            "description": data["weather"][0]["description"],
+        # ----------------------------------------------------
+        # WEATHER CODE MAPPING
+        # ----------------------------------------------------
+
+        weather_code_names = {
+            0: "Clear Sky",
+            1: "Mainly Clear",
+            2: "Partly Cloudy",
+            3: "Overcast Clouds",
+
+            45: "Fog",
+            48: "Depositing Rime Fog",
+
+            51: "Light Drizzle",
+            53: "Moderate Drizzle",
+            55: "Dense Drizzle",
+
+            56: "Light Freezing Drizzle",
+            57: "Dense Freezing Drizzle",
+
+            61: "Slight Rain",
+            63: "Moderate Rain",
+            65: "Heavy Rain",
+
+            66: "Light Freezing Rain",
+            67: "Heavy Freezing Rain",
+
+            71: "Slight Snow",
+            73: "Moderate Snow",
+            75: "Heavy Snow",
+
+            77: "Snow Grains",
+
+            80: "Slight Rain Showers",
+            81: "Moderate Rain Showers",
+            82: "Violent Rain Showers",
+
+            85: "Slight Snow Showers",
+            86: "Heavy Snow Showers",
+
+            95: "Thunderstorm",
+            96: "Thunderstorm with Slight Hail",
+            99: "Thunderstorm with Heavy Hail",
         }
 
-    except (requests.RequestException, KeyError, TypeError):
+        current = data["current"]
+        hourly = data["hourly"]
+
+        # ----------------------------------------------------
+        # CURRENT WEATHER
+        # ----------------------------------------------------
+
+        current_code = current["weather_code"]
+
+        current_weather = {
+            "temperature": current["temperature_2m"],
+            "humidity": current["relative_humidity_2m"],
+            "wind_speed": current["wind_speed_10m"],
+            "description": weather_code_names.get(
+                current_code,
+                "Unknown",
+            ),
+            "fetched_at": datetime.now(timezone.utc),
+        }
+
+        # ----------------------------------------------------
+        # HOURLY FORECAST
+        # ----------------------------------------------------
+
+        forecast = []
+
+        current_local_time = datetime.fromisoformat(
+            current["time"]
+        )
+
+        for i, time_string in enumerate(
+            hourly["time"]
+        ):
+
+            forecast_time = datetime.fromisoformat(
+                time_string
+            )
+
+            # Ignore hours already passed.
+            if forecast_time < current_local_time:
+                continue
+
+            probability = hourly[
+                "precipitation_probability"
+            ][i]
+
+            precipitation = hourly[
+                "precipitation"
+            ][i]
+
+            weather_code = hourly[
+                "weather_code"
+            ][i]
+
+            forecast.append(
+                {
+                    "time": forecast_time,
+                    "temperature": hourly[
+                        "temperature_2m"
+                    ][i],
+                    "rain_probability": probability,
+                    "rain_amount": precipitation,
+                    "description": weather_code_names.get(
+                        weather_code,
+                        "Unknown",
+                    ),
+                }
+            )
+
+            # We only need the next 24 hourly periods.
+            if len(forecast) >= 24:
+                break
+
+        return {
+            "current": current_weather,
+            "forecast": forecast,
+        }
+
+    except (
+        requests.RequestException,
+        KeyError,
+        TypeError,
+        ValueError,
+    ):
         return None
 
 
-def get_weather_data():
+# ============================================================
+# RAIN SUMMARY
+# ============================================================
+
+def get_rain_summary(forecast_data):
     """
-    Uses real weather API only when configured.
-    Otherwise returns demo data.
+    Find the HIGHEST hourly precipitation probability
+    inside each time window.
+
+    These are peak probabilities, not a single probability
+    that rain will occur continuously throughout the window.
     """
 
-    if not OPENWEATHER_API_KEY:
-        return get_demo_weather()
+    if not forecast_data:
+        return {
+            "6h": None,
+            "12h": None,
+            "24h": None,
+        }
 
-    # Replace these with your actual farm coordinates.
-    latitude = 28.6139
-    longitude = 77.2090
-
-    weather = get_openweather_data(
-        OPENWEATHER_API_KEY,
-        latitude,
-        longitude,
-    )
-
-    return weather if weather else get_demo_weather()
+    return {
+        "6h": max(
+            item["rain_probability"]
+            for item in forecast_data[:6]
+        ),
+        "12h": max(
+            item["rain_probability"]
+            for item in forecast_data[:12]
+        ),
+        "24h": max(
+            item["rain_probability"]
+            for item in forecast_data[:24]
+        ),
+    }
 
 
 # ============================================================
 # IRRIGATION AI
 # ============================================================
 
-def predict_irrigation(sensor_data, weather_data, model_name):
+def predict_irrigation(
+    sensor_data,
+    weather_data,
+    model_name,
+):
     """
-    PLACEHOLDER for your real LSTM / GRU / Transformer model.
+    Irrigation AI is not integrated yet.
 
-    Later this function will:
-        1. Prepare the sensor time-series.
-        2. Load the selected trained model.
-        3. Generate irrigation prediction.
-        4. Return the model result.
-
-    Current version uses simple demo logic.
+    Therefore we return N/A instead of fake logic.
     """
-
-    soil_moisture = sensor_data["soil_moisture"]
-    rain_probability = weather_data["rain_probability"]
-
-    # Demo decision
-    if soil_moisture < 30 and rain_probability < 60:
-        required = True
-    else:
-        required = False
-
-    if required:
-        message = "Irrigation Required"
-    else:
-        message = "Irrigation Not Required"
 
     return {
         "model": model_name,
-        "required": required,
-        "message": message,
-        "confidence": 0.0,  # Replace with real model confidence if available.
+        "required": None,
+        "message": "N/A",
+        "confidence": None,
     }
 
 
 # ============================================================
-# WEED AI
+# WEED DETECTION
 # ============================================================
 
 def run_weed_detection(image_file):
     """
-    PLACEHOLDER / MODEL ADAPTER.
+    YOLO model is not integrated yet.
 
-    Your friend's trained YOLO model should eventually be
-    connected here.
-
-    Expected output:
-        {
-            "weed_detected": True/False,
-            "weed_name": "...",
-            "confidence": 0.94
-        }
-
-    The current version returns a demo result so that the
-    dashboard can be tested before the trained model exists.
+    Therefore we return N/A.
     """
 
-    # --------------------------------------------------------
-    # Example future integration:
-    #
-    # from ultralytics import YOLO
-    #
-    # model = YOLO(YOLO_MODEL_PATH)
-    # results = model(image_file)
-    #
-    # Parse results here.
-    # --------------------------------------------------------
-
     return {
-        "weed_detected": True,
-        "weed_name": "Detected Weed",
-        "confidence": 94.0,
+        "weed_detected": None,
+        "weed_name": None,
+        "confidence": None,
     }
 
 
 # ============================================================
-# TREATMENT RECOMMENDATION
+# RECOMMENDATION SYSTEM
 # ============================================================
 
 def get_treatment_recommendation(
@@ -322,97 +484,91 @@ def get_treatment_recommendation(
     weather_data,
 ):
     """
-    Returns treatment information.
+    Treatment recommendation system is not integrated yet.
 
-    IMPORTANT:
-    Actual herbicide/dose values must come from verified
-    agricultural guidance or product-label information.
-    Do not invent them in code.
+    Therefore we return N/A.
     """
 
-    if not weed_name:
-        return None
-
-    rain_probability = weather_data["rain_probability"]
-
-    recommendation = {
+    return {
         "weed_name": weed_name,
         "crop": crop_name,
-        "treatment": "Verified agricultural recommendation required",
-        "dose": "To be populated from verified guidance",
-        "spray_window": "To be determined",
-        "duration": "To be determined",
-        "weather_status": "Suitable",
+        "treatment": None,
+        "dose": None,
+        "spray_window": None,
+        "duration": None,
+        "weather_status": None,
     }
 
-    if rain_probability >= 60:
-        recommendation["weather_status"] = "Delay spraying due to weather"
-
-    return recommendation
-
 
 # ============================================================
-# CHART DATA
+# SENSOR HISTORY
 # ============================================================
 
-def create_demo_sensor_history():
+def get_sensor_history():
     """
-    Temporary history.
-
-    Later replace this with historical ESP32/ThingSpeak data.
+    Historical ESP32/ThingSpeak data is not connected yet.
     """
 
-    return pd.DataFrame(
-        {
-            "Time": [
-                "10:00",
-                "10:10",
-                "10:20",
-                "10:30",
-                "10:40",
-                "10:50",
-                "11:00",
-                "11:10",
-            ],
-            "Soil Moisture": [65, 61, 58, 54, 50, 47, 44, 42],
-            "Temperature": [26, 27, 28, 28, 29, 29, 29, 29],
-            "Humidity": [74, 73, 72, 71, 70, 69, 68, 68],
-        }
-    )
-
-
-def create_demo_water_history():
-    return pd.DataFrame(
-        {
-            "Time": [
-                "10:00",
-                "10:10",
-                "10:20",
-                "10:30",
-                "10:40",
-                "10:50",
-                "11:00",
-            ],
-            "Water Used (L)": [8, 10, 7, 12, 9, 11, 6],
-        }
-    )
+    return None
 
 
 # ============================================================
-# LOAD CURRENT DATA
+# WATER HISTORY
+# ============================================================
+
+def get_water_history():
+    """
+    Historical water usage data is not connected yet.
+    """
+
+    return None
+
+
+# ============================================================
+# LOAD DATA
 # ============================================================
 
 sensor_data = get_sensor_data()
-weather_data = get_weather_data()
+
+weather_result = get_weather_data(
+    WEATHER_LATITUDE,
+    WEATHER_LONGITUDE,
+)
+
+if weather_result is not None:
+
+    weather_data = weather_result["current"]
+    forecast_data = weather_result["forecast"]
+
+else:
+
+    weather_data = {
+        "temperature": None,
+        "humidity": None,
+        "wind_speed": None,
+        "description": "N/A",
+        "fetched_at": None,
+    }
+
+    forecast_data = []
+
+
+rain_summary = get_rain_summary(
+    forecast_data
+)
 
 
 # ============================================================
 # SIDEBAR
 # ============================================================
 
-st.sidebar.title("🌱 Smart Agriculture")
+st.sidebar.title(
+    "🌱 Smart Agriculture"
+)
 
-st.sidebar.caption("Precision Agriculture Dashboard")
+st.sidebar.caption(
+    "Precision Agriculture Dashboard"
+)
 
 st.sidebar.divider()
 
@@ -430,7 +586,9 @@ page = st.sidebar.radio(
 
 st.sidebar.divider()
 
-st.sidebar.subheader("⚙️ Settings")
+st.sidebar.subheader(
+    "⚙️ Settings"
+)
 
 crop_name = st.sidebar.selectbox(
     "Crop",
@@ -449,310 +607,408 @@ model_name = st.sidebar.selectbox(
     "Irrigation AI Model",
     [
         "LSTM",
-        "GRU",
+        "TCN",
         "Transformer",
     ],
 )
 
 st.sidebar.divider()
 
-if USE_DEMO_DATA:
-    st.sidebar.warning("Demo data mode")
+# ============================================================
+# WEATHER REFRESH
+# ============================================================
+
+if st.sidebar.button(
+    "🔄 Refresh Weather",
+    use_container_width=True,
+):
+
+    get_weather_data.clear()
+
+    st.rerun()
+
+
+st.sidebar.info(
+    "ESP32 sensor data: N/A"
+)
 
 
 # ============================================================
-# OVERVIEW PAGE
+# OVERVIEW
 # ============================================================
 
 if page == "🏠 Overview":
 
-    st.title("🌱 Smart Agriculture Dashboard")
+    st.title(
+        "🌱 Smart Agriculture Dashboard"
+    )
 
     st.write(
         "Integrated monitoring for smart irrigation, "
-        "weed detection, weather-aware decisions, and "
-        "AI-based agricultural recommendations."
+        "weed detection, weather-aware decisions, "
+        "and AI-based agricultural recommendations."
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # CURRENT FIELD METRICS
-    # --------------------------------------------------------
-
-    st.header("📊 Current Field Status", anchor=False)
+    st.header(
+        "📊 Current Field Status",
+        anchor=False,
+    )
 
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric(
         "🌡 Temperature",
-        f"{sensor_data['temperature']:.1f} °C",
+        display_value(
+            sensor_data["temperature"],
+            " °C",
+        ),
     )
 
     c2.metric(
         "💧 Soil Moisture",
-        f"{sensor_data['soil_moisture']:.1f} %",
+        display_value(
+            sensor_data["soil_moisture"],
+            " %",
+        ),
     )
 
     c3.metric(
         "💦 Humidity",
-        f"{sensor_data['humidity']:.1f} %",
+        display_value(
+            sensor_data["humidity"],
+            " %",
+        ),
     )
 
     c4.metric(
         "🪣 Water Level",
-        f"{sensor_data['water_level']:.1f} %",
+        display_value(
+            sensor_data["water_level"],
+            " %",
+        ),
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # QUICK STATUS
-    # --------------------------------------------------------
-
-    st.header("⚡ System Status", anchor=False)
-
-    status1, status2, status3 = st.columns(3)
-
-    if sensor_data["rain"]:
-        status1.warning("🌧 Rain Detected")
-    else:
-        status1.success("☀️ No Rain Detected")
-
-    if sensor_data["water_level"] < 20:
-        status2.error("🚨 Low Water Level")
-    else:
-        status2.success("✅ Water Available")
-
-    status3.info(
-        f"Pump: {sensor_data['pump_status']}"
+    st.header(
+        "⚡ System Status",
+        anchor=False,
     )
 
-    st.divider()
+    s1, s2, s3 = st.columns(3)
 
-    # --------------------------------------------------------
-    # IRRIGATION PREVIEW
-    # --------------------------------------------------------
-
-    irrigation_prediction = predict_irrigation(
-        sensor_data,
-        weather_data,
-        model_name,
-    )
-
-    st.header("💧 Irrigation Prediction", anchor=False)
-
-    if irrigation_prediction["required"]:
-        st.warning(
-            f"Model: {model_name} → "
-            "Irrigation Required"
-        )
+    if sensor_data["rain"] is None:
+        s1.info("🌧 Rain Detection: N/A")
+    elif sensor_data["rain"]:
+        s1.warning("🌧 Rain Detected")
     else:
-        st.success(
-            f"Model: {model_name} → "
-            "Irrigation Not Required"
+        s1.success("☀️ No Rain Detected")
+
+    if sensor_data["water_level"] is None:
+        s2.info("🪣 Water Level: N/A")
+    elif sensor_data["water_level"] < 20:
+        s2.error("🚨 Low Water Level")
+    else:
+        s2.success("✅ Water Available")
+
+    if sensor_data["pump_status"] is None:
+        s3.info("🔌 Pump Status: N/A")
+    else:
+        s3.info(
+            f"🔌 Pump: {sensor_data['pump_status']}"
         )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # WEATHER PREVIEW
-    # --------------------------------------------------------
+    st.header(
+        "💧 Irrigation Prediction",
+        anchor=False,
+    )
 
-    st.header("🌦 Weather", anchor=False)
+    st.info(
+        f"Selected Model: {model_name}"
+    )
+
+    st.warning(
+        "Irrigation AI: N/A"
+    )
+
+    st.divider()
+
+    st.header(
+        "🌦 Current Weather",
+        anchor=False,
+    )
 
     w1, w2, w3 = st.columns(3)
 
     w1.metric(
         "Temperature",
-        f"{weather_data['temperature']:.1f} °C",
+        display_value(
+            weather_data["temperature"],
+            " °C",
+        ),
     )
 
     w2.metric(
-        "Rain Probability",
-        f"{weather_data['rain_probability']:.0f} %",
+        "Humidity",
+        display_value(
+            weather_data["humidity"],
+            " %",
+        ),
     )
 
     w3.metric(
         "Wind Speed",
-        f"{weather_data['wind_speed']:.1f} m/s",
+        display_value(
+            weather_data["wind_speed"],
+            " m/s",
+        ),
     )
 
-
-# ============================================================
-# IRRIGATION PAGE
-# ============================================================
-
-elif page == "💧 Irrigation":
-
-    st.title("💧 Smart Irrigation")
-
     st.write(
-        "Sensor monitoring + AI prediction + weather-aware scheduling."
+        "Condition: "
+        f"{weather_data['description']}"
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # SENSOR VALUES
-    # --------------------------------------------------------
+    st.header(
+        "🌧 Forecast Summary",
+        anchor=False,
+    )
 
-    st.header("Current Sensor Readings", anchor=False)
+    rs1, rs2, rs3 = st.columns(3)
+
+    rs1.metric(
+        "Peak Rain Probability — Next 6h",
+        display_value(
+            rain_summary["6h"],
+            "%",
+        ),
+    )
+
+    rs2.metric(
+        "Peak Rain Probability — Next 12h",
+        display_value(
+            rain_summary["12h"],
+            "%",
+        ),
+    )
+
+    rs3.metric(
+        "Peak Rain Probability — Next 24h",
+        display_value(
+            rain_summary["24h"],
+            "%",
+        ),
+    )
+
+
+# ============================================================
+# IRRIGATION
+# ============================================================
+
+elif page == "💧 Irrigation":
+
+    st.title(
+        "💧 Smart Irrigation"
+    )
+
+    st.write(
+        "Sensor monitoring + AI prediction + "
+        "weather-aware scheduling."
+    )
+
+    st.divider()
+
+    st.header(
+        "Current Sensor Readings",
+        anchor=False,
+    )
 
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric(
         "Soil Moisture",
-        f"{sensor_data['soil_moisture']:.1f} %",
+        display_value(
+            sensor_data["soil_moisture"],
+            " %",
+        ),
     )
 
     c2.metric(
         "Temperature",
-        f"{sensor_data['temperature']:.1f} °C",
+        display_value(
+            sensor_data["temperature"],
+            " °C",
+        ),
     )
 
     c3.metric(
         "Humidity",
-        f"{sensor_data['humidity']:.1f} %",
+        display_value(
+            sensor_data["humidity"],
+            " %",
+        ),
     )
 
     c4.metric(
         "Water Level",
-        f"{sensor_data['water_level']:.1f} %",
+        display_value(
+            sensor_data["water_level"],
+            " %",
+        ),
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # AI MODEL
-    # --------------------------------------------------------
-
-    st.header("🧠 AI Irrigation Prediction", anchor=False)
-
-    prediction = predict_irrigation(
-        sensor_data,
-        weather_data,
-        model_name,
+    st.header(
+        "🧠 AI Irrigation Prediction",
+        anchor=False,
     )
 
     p1, p2, p3 = st.columns(3)
 
-    p1.metric("Selected Model", model_name)
+    p1.metric(
+        "Selected Model",
+        model_name,
+    )
 
-    if prediction["required"]:
-        p2.error("IRRIGATION REQUIRED")
-    else:
-        p2.success("IRRIGATION NOT REQUIRED")
+    p2.metric(
+        "Irrigation Decision",
+        "N/A",
+    )
 
     p3.metric(
         "Pump Status",
-        sensor_data["pump_status"],
+        display_value(
+            sensor_data["pump_status"]
+        ),
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # WEATHER-AWARE LOGIC
-    # --------------------------------------------------------
+    st.header(
+        "🌦 Weather-Aware Scheduling",
+        anchor=False,
+    )
 
-    st.header("🌦 Weather-Aware Scheduling", anchor=False)
+    rs1, rs2, rs3 = st.columns(3)
 
-    rain_probability = weather_data["rain_probability"]
+    rs1.metric(
+        "Peak Rain Probability — Next 6h",
+        display_value(
+            rain_summary["6h"],
+            "%",
+        ),
+    )
 
-    if prediction["required"] and rain_probability >= 60:
+    rs2.metric(
+        "Peak Rain Probability — Next 12h",
+        display_value(
+            rain_summary["12h"],
+            "%",
+        ),
+    )
 
-        st.warning(
-            "AI predicts irrigation is needed, but significant "
-            "rain is expected. Irrigation should be postponed."
-        )
+    rs3.metric(
+        "Peak Rain Probability — Next 24h",
+        display_value(
+            rain_summary["24h"],
+            "%",
+        ),
+    )
 
-    elif prediction["required"]:
+    st.info(
+        "Irrigation AI decision is N/A because "
+        "the trained irrigation model has not "
+        "been connected yet."
+    )
 
-        st.success(
-            "AI predicts irrigation is needed and current "
-            "weather conditions do not indicate major rainfall."
+    st.divider()
+
+    st.header(
+        "📈 Sensor History",
+        anchor=False,
+    )
+
+    history_df = get_sensor_history()
+
+    if history_df is None:
+
+        st.info(
+            "N/A — Historical ESP32 sensor data "
+            "is not connected yet."
         )
 
     else:
 
-        st.info(
-            "Irrigation is currently not required according "
-            "to the selected model."
+        fig = px.line(
+            history_df,
+            x="Time",
+            y="Soil Moisture",
+            markers=True,
+            title="Soil Moisture Over Time",
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
         )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # SOIL MOISTURE GRAPH
-    # --------------------------------------------------------
-
-    st.header("📈 Sensor History", anchor=False)
-
-    history_df = create_demo_sensor_history()
-
-    fig = px.line(
-        history_df,
-        x="Time",
-        y=["Soil Moisture"],
-        markers=True,
-        title="Soil Moisture Over Time",
+    st.header(
+        "💦 Water Usage",
+        anchor=False,
     )
 
-    fig.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Moisture (%)",
-    )
+    water_df = get_water_history()
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-    )
+    if water_df is None:
 
-    # --------------------------------------------------------
-    # WATER USAGE
-    # --------------------------------------------------------
+        st.info(
+            "N/A — Historical water usage data "
+            "is not connected yet."
+        )
 
-    water_df = create_demo_water_history()
+    else:
 
-    fig2 = px.bar(
-        water_df,
-        x="Time",
-        y="Water Used (L)",
-        title="Water Usage Over Time",
-    )
+        fig2 = px.bar(
+            water_df,
+            x="Time",
+            y="Water Used (L)",
+            title="Water Usage Over Time",
+        )
 
-    fig2.update_layout(
-        xaxis_title="Time",
-        yaxis_title="Water Used (L)",
-    )
-
-    st.plotly_chart(
-        fig2,
-        use_container_width=True,
-    )
+        st.plotly_chart(
+            fig2,
+            use_container_width=True,
+        )
 
 
 # ============================================================
-# WEED DETECTION PAGE
+# WEED DETECTION
 # ============================================================
 
 elif page == "🌿 Weed Detection":
 
-    st.title("🌿 AI Weed Detection")
+    st.title(
+        "🌿 AI Weed Detection"
+    )
 
     st.write(
-        "Upload a crop image or capture a photo and analyze it "
-        "using the weed-detection model."
+        "Upload a crop image or capture a photo "
+        "for weed analysis."
     )
 
     st.divider()
 
-    # --------------------------------------------------------
-    # IMAGE INPUT
-    # --------------------------------------------------------
-
     input_method = st.radio(
-        "Image source",
+        "Image Source",
         [
             "Upload from device",
             "Take a photo",
@@ -766,7 +1022,11 @@ elif page == "🌿 Weed Detection":
 
         uploaded_file = st.file_uploader(
             "Choose a crop image",
-            type=["jpg", "jpeg", "png"],
+            type=[
+                "jpg",
+                "jpeg",
+                "png",
+            ],
         )
 
     else:
@@ -775,13 +1035,11 @@ elif page == "🌿 Weed Detection":
             "Take a crop photo"
         )
 
-    # --------------------------------------------------------
-    # PROCESS IMAGE
-    # --------------------------------------------------------
-
     if uploaded_file is not None:
 
-        st.session_state.uploaded_image = uploaded_file
+        st.session_state.uploaded_image = (
+            uploaded_file
+        )
 
         st.image(
             uploaded_file,
@@ -796,7 +1054,9 @@ elif page == "🌿 Weed Detection":
             use_container_width=True,
         ):
 
-            with st.spinner("Analyzing image..."):
+            with st.spinner(
+                "Running weed detection..."
+            ):
 
                 result = run_weed_detection(
                     uploaded_file
@@ -815,10 +1075,11 @@ elif page == "🌿 Weed Detection":
             )
 
             st.session_state.last_detection_time = (
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
             )
 
-            # Create recommendation
             st.session_state.recommendation = (
                 get_treatment_recommendation(
                     result["weed_name"],
@@ -827,227 +1088,338 @@ elif page == "🌿 Weed Detection":
                 )
             )
 
-    # --------------------------------------------------------
-    # DETECTION RESULT
-    # --------------------------------------------------------
+    st.divider()
 
-    if st.session_state.weed_detected is not None:
+    st.header(
+        "🤖 Detection Result",
+        anchor=False,
+    )
 
-        st.divider()
+    r1, r2 = st.columns(2)
 
-        st.header("🤖 Detection Result", anchor=False)
-
-        r1, r2 = st.columns(2)
-
-        if st.session_state.weed_detected:
-
-            r1.error("🌿 WEED DETECTED")
-
-        else:
-
-            r1.success("✅ NO WEED DETECTED")
-
-        r2.metric(
-            "Confidence",
-            f"{st.session_state.weed_confidence:.1f} %",
-        )
-
-        st.write(
-            f"Detected Class: "
-            f"**{st.session_state.weed_name}**"
-        )
-
-        if st.session_state.last_detection_time:
-            st.caption(
-                "Last analysis: "
-                f"{st.session_state.last_detection_time}"
+    r1.metric(
+        "Weed Status",
+        (
+            "N/A"
+            if st.session_state.weed_detected is None
+            else (
+                "WEED DETECTED"
+                if st.session_state.weed_detected
+                else "NO WEED"
             )
+        ),
+    )
+
+    r2.metric(
+        "Confidence",
+        display_value(
+            st.session_state.weed_confidence,
+            " %",
+        ),
+    )
+
+    st.write(
+        "Detected Weed: "
+        f"{display_value(st.session_state.weed_name)}"
+    )
+
+    if st.session_state.last_detection_time:
+        st.caption(
+            "Last analysis: "
+            f"{st.session_state.last_detection_time}"
+        )
 
 
 # ============================================================
-# WEATHER PAGE
+# WEATHER
 # ============================================================
 
 elif page == "🌦 Weather":
 
-    st.title("🌦 Weather Monitoring")
-
-    st.write(
-        "Weather information used for irrigation and spraying decisions."
+    title_col, city_col = st.columns(
+        [4, 1]
     )
 
+    with title_col:
+        st.title(
+            "🌦 Weather Monitoring"
+        )
+
+    with city_col:
+        st.markdown(
+            f"### 📍 {WEATHER_CITY}"
+        )
+
+    st.write(
+        "Current weather and hourly forecast "
+        "for agricultural decision making."
+    )
+
+    st.caption(
+        f"Weather source: {WEATHER_PROVIDER}"
+    )
+
+    # --------------------------------------------------------
+    # LAST UPDATED
+    # --------------------------------------------------------
+
+    if weather_data["fetched_at"] is not None:
+
+        st.caption(
+            "Last updated: "
+            + weather_data["fetched_at"]
+            .astimezone()
+            .strftime(
+                "%d %b %Y, %I:%M %p"
+            )
+        )
+
+    else:
+
+        st.caption(
+            "Last updated: N/A"
+        )
+
     st.divider()
+
+    # --------------------------------------------------------
+    # CURRENT WEATHER
+    # --------------------------------------------------------
+
+    st.header(
+        "Current Weather",
+        anchor=False,
+    )
 
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric(
         "Temperature",
-        f"{weather_data['temperature']:.1f} °C",
+        display_value(
+            weather_data["temperature"],
+            " °C",
+        ),
     )
 
     c2.metric(
         "Humidity",
-        f"{weather_data['humidity']:.1f} %",
+        display_value(
+            weather_data["humidity"],
+            " %",
+        ),
     )
 
     c3.metric(
-        "Rain Probability",
-        f"{weather_data['rain_probability']:.0f} %",
+        "Wind Speed",
+        display_value(
+            weather_data["wind_speed"],
+            " m/s",
+        ),
     )
 
     c4.metric(
-        "Wind Speed",
-        f"{weather_data['wind_speed']:.1f} m/s",
+        "Condition",
+        weather_data["description"],
     )
 
     st.divider()
 
-    st.subheader("Forecast Status")
+    # --------------------------------------------------------
+    # RAIN RISK
+    # --------------------------------------------------------
 
-    st.info(
-        f"Current condition: {weather_data['description']}"
+    st.header(
+        "🌧 Rain Probability",
+        anchor=False,
     )
 
-    if weather_data["rain_probability"] >= 60:
+    rs1, rs2, rs3 = st.columns(3)
 
-        st.warning(
-            "Rain probability is high. Consider postponing "
-            "irrigation and spraying operations."
+    rs1.metric(
+        "Peak in Next 6 Hours",
+        display_value(
+            rain_summary["6h"],
+            "%",
+        ),
+    )
+
+    rs2.metric(
+        "Peak in Next 12 Hours",
+        display_value(
+            rain_summary["12h"],
+            "%",
+        ),
+    )
+
+    rs3.metric(
+        "Peak in Next 24 Hours",
+        display_value(
+            rain_summary["24h"],
+            "%",
+        ),
+    )
+
+    st.caption(
+        "These values show the highest hourly "
+        "precipitation probability within each window."
+    )
+
+    st.divider()
+
+    # --------------------------------------------------------
+    # HOURLY FORECAST
+    # --------------------------------------------------------
+
+    st.header(
+        "🌧 Upcoming Forecast",
+        anchor=False,
+    )
+
+    if not forecast_data:
+
+        st.info(
+            "N/A — Forecast data is unavailable."
         )
 
     else:
 
-        st.success(
-            "No major rainfall restriction is currently indicated."
-        )
+        for forecast in forecast_data:
+
+            f1, f2, f3 = st.columns(3)
+
+            formatted_time = forecast[
+                "time"
+            ].strftime(
+                "%d %b, %I:%M %p"
+            )
+
+            f1.write(
+                f"**Time:** {formatted_time}"
+            )
+
+            f2.write(
+                f"**Temperature:** "
+                f"{forecast['temperature']:.1f} °C"
+            )
+
+            f3.write(
+                f"**Rain Probability:** "
+                f"{forecast['rain_probability']:.0f}%"
+            )
+
+            st.write(
+                f"**Expected Precipitation:** "
+                f"{forecast['rain_amount']:.1f} mm"
+            )
+
+            st.write(
+                f"**Condition:** "
+                f"{forecast['description']}"
+            )
+
+            st.divider()
 
 
 # ============================================================
-# RECOMMENDATIONS PAGE
+# RECOMMENDATIONS
 # ============================================================
 
 elif page == "🧪 Recommendations":
 
-    st.title("🧪 Agricultural Recommendations")
+    st.title(
+        "🧪 Agricultural Recommendations"
+    )
 
     st.write(
-        "This section combines AI results, field data and weather "
-        "information to present farmer guidance."
+        "This section will combine weed detection, "
+        "crop information, AI output, and weather."
     )
 
     st.divider()
 
-    if st.session_state.recommendation is None:
+    st.header(
+        "🌿 Weed Treatment Recommendation",
+        anchor=False,
+    )
 
-        st.info(
-            "Run weed detection first to generate a weed-treatment "
-            "recommendation."
-        )
+    r1, r2 = st.columns(2)
 
-    else:
+    r1.metric(
+        "Detected Weed",
+        display_value(
+            st.session_state.weed_name
+        ),
+    )
 
-        recommendation = st.session_state.recommendation
+    r2.metric(
+        "Crop",
+        (
+            "N/A"
+            if crop_name == "Select crop"
+            else crop_name
+        ),
+    )
 
-        st.header("🌿 Weed Treatment Recommendation", anchor=False)
+    st.write("Treatment: N/A")
+    st.write("Dose: N/A")
+    st.write("Recommended Spray Window: N/A")
+    st.write("Spray Duration: N/A")
 
-        a1, a2 = st.columns(2)
-
-        a1.metric(
-            "Detected Weed",
-            recommendation["weed_name"],
-        )
-
-        a2.metric(
-            "Crop",
-            recommendation["crop"],
-        )
-
-        st.write(
-            f"**Treatment:** "
-            f"{recommendation['treatment']}"
-        )
-
-        st.write(
-            f"**Dose:** "
-            f"{recommendation['dose']}"
-        )
-
-        st.write(
-            f"**Recommended Spray Window:** "
-            f"{recommendation['spray_window']}"
-        )
-
-        st.write(
-            f"**Spray Duration:** "
-            f"{recommendation['duration']}"
-        )
-
-        if recommendation["weather_status"] == "Suitable":
-
-            st.success(
-                "🌤 Current weather status does not indicate "
-                "a major spraying restriction."
-            )
-
-        else:
-
-            st.warning(
-                f"🌧 {recommendation['weather_status']}"
-            )
-
-        st.divider()
-
-        st.warning(
-            "Treatment and dosage values must be populated from "
-            "verified agricultural guidance/product labels."
-        )
+    st.info(
+        "Recommendation engine: N/A — "
+        "AI weed classification and verified "
+        "agricultural recommendation data are "
+        "not connected yet."
+    )
 
 
 # ============================================================
-# AI MODELS PAGE
+# AI MODELS
 # ============================================================
 
 elif page == "🤖 AI Models":
 
-    st.title("🤖 Irrigation AI Models")
+    st.title(
+        "🤖 Irrigation AI Models"
+    )
 
     st.write(
-        "Comparison interface for the deep-learning models "
-        "used for irrigation prediction."
+        "Deep-learning models for irrigation prediction."
     )
 
     st.divider()
-
-    # --------------------------------------------------------
-    # Model comparison table
-    # --------------------------------------------------------
 
     model_comparison = pd.DataFrame(
         {
             "Model": [
                 "LSTM",
-                "GRU",
+                "TCN",
                 "Transformer",
             ],
             "Approach": [
                 "Recurrent",
-                "Recurrent",
+                "Temporal Convolution",
                 "Attention-based",
             ],
-            "Status": [
-                "To be integrated",
-                "To be integrated",
-                "To be integrated",
+            "Training Status": [
+                "N/A",
+                "N/A",
+                "N/A",
+            ],
+            "Testing Status": [
+                "N/A",
+                "N/A",
+                "N/A",
             ],
             "RMSE": [
-                "-",
-                "-",
-                "-",
+                "N/A",
+                "N/A",
+                "N/A",
             ],
             "MAE": [
-                "-",
-                "-",
-                "-",
+                "N/A",
+                "N/A",
+                "N/A",
             ],
         }
     )
@@ -1060,15 +1432,17 @@ elif page == "🤖 AI Models":
 
     st.divider()
 
-    st.subheader("Current Model")
+    st.subheader(
+        "Current Model"
+    )
 
     st.info(
-        f"Selected irrigation model: **{model_name}**"
+        f"Selected model: {model_name}"
     )
 
     st.write(
-        "The trained models will be connected through the "
-        "`predict_irrigation()` function."
+        "Model output: N/A — trained model "
+        "is not connected yet."
     )
 
 
@@ -1079,5 +1453,6 @@ elif page == "🤖 AI Models":
 st.divider()
 
 st.caption(
-    "Smart Agriculture Project • ESP32 + IoT + AI + Weather + Computer Vision"
+    "Smart Agriculture Project • "
+    "ESP32 + IoT + AI + Weather + Computer Vision"
 )
