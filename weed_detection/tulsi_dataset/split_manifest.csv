@@ -1,0 +1,94 @@
+original_file,source_folder,near_duplicate_group,split,boxes
+20261013_214403.jpg,mix tulsi and weed,0,train,3
+20261013_214408.jpg,mix tulsi and weed,1,test,4
+20261013_214412.jpg,mix tulsi and weed,2,val,3
+20261013_214417.jpg,mix tulsi and weed,3,train,3
+20261013_214422.jpg,mix tulsi and weed,4,train,3
+20261013_214427.jpg,mix tulsi and weed,5,train,3
+20261013_214435.jpg,mix tulsi and weed,6,test,3
+20261013_214438.jpg,mix tulsi and weed,7,train,4
+20261013_214443.jpg,mix tulsi and weed,8,train,4
+20261013_214445.jpg,mix tulsi and weed,8,train,4
+20261013_214451.jpg,mix tulsi and weed,9,train,3
+20261013_214721.jpg,mix tulsi and weed,10,train,3
+20261013_214723.jpg,mix tulsi and weed,10,train,2
+20261013_214730.jpg,mix tulsi and weed,11,train,3
+20261013_214735.jpg,mix tulsi and weed,12,train,3
+20261013_214738.jpg,mix tulsi and weed,13,val,3
+20261013_214748.jpg,mix tulsi and weed,14,val,2
+20261013_214750.jpg,mix tulsi and weed,15,test,3
+20261013_214804.jpg,mix tulsi and weed,16,test,3
+20261013_214810.jpg,mix tulsi and weed,17,val,2
+20261013_214812.jpg,mix tulsi and weed,18,train,3
+20261013_214815.jpg,mix tulsi and weed,19,val,3
+20261013_214819.jpg,mix tulsi and weed,20,train,2
+20261013_214822.jpg,mix tulsi and weed,21,train,2
+20261013_214828.jpg,mix tulsi and weed,22,train,1
+20261013_214832.jpg,mix tulsi and weed,22,train,1
+20261013_214836.jpg,mix tulsi and weed,23,train,2
+20261013_214840.jpg,mix tulsi and weed,24,train,2
+20261013_214847.jpg,mix tulsi and weed,25,train,2
+20261013_214853.jpg,mix tulsi and weed,26,train,2
+20261013_214909.jpg,mix tulsi and weed,27,test,2
+20261013_214910.jpg,mix tulsi and weed,28,train,3
+20261013_214911.jpg,mix tulsi and weed,29,train,3
+20261013_214917.jpg,mix tulsi and weed,30,train,3
+20261013_214918.jpg,mix tulsi and weed,30,train,3
+20261013_214922.jpg,mix tulsi and weed,31,train,2
+20261013_214924.jpg,mix tulsi and weed,32,train,3
+20261013_214926.jpg,mix tulsi and weed,33,train,4
+20261013_214927.jpg,mix tulsi and weed,34,val,3
+20261013_214928.jpg,mix tulsi and weed,35,train,3
+20261013_214929.jpg,mix tulsi and weed,36,train,2
+20261013_214930.jpg,mix tulsi and weed,37,test,2
+20261013_214933.jpg,mix tulsi and weed,38,train,3
+20261013_214937.jpg,mix tulsi and weed,39,val,3
+20261013_215047.jpg,mix tulsi and weed,40,val,2
+20261013_215049.jpg,mix tulsi and weed,41,train,2
+20261013_215052.jpg,mix tulsi and weed,42,train,2
+20261013_215054.jpg,mix tulsi and weed,43,test,2
+20261013_215056.jpg,mix tulsi and weed,44,train,2
+20261013_215100.jpg,mix tulsi and weed,45,train,3
+image-1791907846819.jpg,mix tulsi and weed,46,train,3
+20261013_174932.jpg,tulsi only,47,train,1
+20261013_174934.jpg,tulsi only,47,train,1
+20261013_174940.jpg,tulsi only,48,test,1
+20261013_174944.jpg,tulsi only,49,test,1
+20261013_174949.jpg,tulsi only,50,val,1
+20261013_174956.jpg,tulsi only,51,train,1
+20261013_174957.jpg,tulsi only,51,train,1
+20261013_175003.jpg,tulsi only,52,train,1
+20261013_175004.jpg,tulsi only,52,train,1
+20261013_175010.jpg,tulsi only,53,val,1
+20261013_175026.jpg,tulsi only,54,train,1
+20261013_175030.jpg,tulsi only,55,train,1
+20261013_175035.jpg,tulsi only,56,train,1
+20261013_175039.jpg,tulsi only,57,val,1
+20261013_175149.jpg,tulsi only,58,test,1
+20261013_175156.jpg,tulsi only,59,train,1
+20261013_175202.jpg,tulsi only,60,train,2
+20261013_175204.jpg,tulsi only,61,train,2
+20261013_175217.jpg,tulsi only,62,train,1
+20261013_175221.jpg,tulsi only,63,train,1
+20261013_175228.jpg,tulsi only,64,test,1
+20261013_175237.jpg,tulsi only,65,train,1
+20261013_175239.jpg,tulsi only,65,train,1
+20261013_203511.jpg,tulsi only,66,train,1
+20261013_203515.jpg,tulsi only,67,train,1
+20261013_203517.jpg,tulsi only,68,train,1
+20261013_203527.jpg,tulsi only,69,train,1
+20261013_203528.jpg,tulsi only,70,val,1
+20261013_203530.jpg,tulsi only,71,val,1
+20261013_203534.jpg,tulsi only,72,train,1
+20261013_203553.jpg,tulsi only,73,train,1
+20261013_203556.jpg,tulsi only,73,train,1
+20261013_203558.jpg,tulsi only,73,train,1
+20261013_203602.jpg,tulsi only,74,test,1
+20261013_203607.jpg,tulsi only,75,train,1
+20261013_214711.jpg,weed only,76,train,2
+20261013_214714.jpg,weed only,76,train,1
+20261013_214717.jpg,weed only,77,test,2
+20261013_214752.jpg,weed only,78,val,1
+20261013_214759.jpg,weed only,79,train,1
+20261013_214904.jpg,weed only,80,train,1
+20261013_214905.jpg,weed only,81,train,1

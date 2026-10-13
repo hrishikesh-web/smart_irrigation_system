@@ -1,0 +1,36 @@
+{
+  "photos": 93,
+  "near_duplicate_groups": 82,
+  "splits": {
+    "train": {
+      "images": 66,
+      "from: mix tulsi and weed": 36,
+      "crop boxes": 63,
+      "weed boxes": 66,
+      "from: tulsi only": 25,
+      "from: weed only": 5
+    },
+    "val": {
+      "images": 14,
+      "from: mix tulsi and weed": 8,
+      "crop boxes": 14,
+      "weed boxes": 13,
+      "from: tulsi only": 5,
+      "from: weed only": 1
+    },
+    "test": {
+      "images": 13,
+      "from: mix tulsi and weed": 7,
+      "crop boxes": 12,
+      "weed boxes": 14,
+      "from: tulsi only": 5,
+      "from: weed only": 1
+    }
+  },
+  "seed": 42,
+  "originals_unchanged": true,
+  "class_mapping": {
+    "0": "crop",
+    "1": "weed"
+  }
+}
