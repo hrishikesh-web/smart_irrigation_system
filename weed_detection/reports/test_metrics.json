@@ -1,0 +1,55 @@
+{
+  "evaluated": "2026-10-12T23:44:20",
+  "split": "test",
+  "images": 190,
+  "weights": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\models\\weed_detector.pt",
+  "weights_sha256": "ac2e0080cfb69a5bcb4875d029544f6d7dc40eafd3ef521e94ec30c7fc03520c",
+  "eval_run_dir": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\runs\\eval_test_20261012-234402",
+  "imgsz": 512,
+  "detection_metrics_overall": {
+    "precision": 0.8557,
+    "recall": 0.8205,
+    "mAP50": 0.8959,
+    "mAP50-95": 0.5792
+  },
+  "detection_metrics_per_class": {
+    "crop": {
+      "precision": 0.7554,
+      "recall": 0.785,
+      "mAP50": 0.8494,
+      "mAP50-95": 0.5611
+    },
+    "weed": {
+      "precision": 0.9559,
+      "recall": 0.856,
+      "mAP50": 0.9423,
+      "mAP50-95": 0.5973
+    }
+  },
+  "image_level_weed_check": {
+    "confidence_threshold": 0.25,
+    "images": 190,
+    "images_with_weed_in_labels": 98,
+    "images_without_weed_in_labels": 92,
+    "weed_found_correctly (TP)": 98,
+    "weed_missed (FN)": 0,
+    "false_weed_alarm (FP)": 0,
+    "correctly_no_weed (TN)": 92,
+    "accuracy": 1.0,
+    "weed_recall (share of weedy images flagged)": 1.0,
+    "weed_precision (share of flags that were right)": 1.0,
+    "missed_images": [],
+    "false_alarm_images": []
+  },
+  "environment": {
+    "python": "3.12.10",
+    "os": "Windows-11-10.0.26200-SP0",
+    "torch": "2.14.1+cu126",
+    "torch_cuda_build": "12.6",
+    "ultralytics": "8.4.175",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_vram_gb": 8.0,
+    "device": "0"
+  }
+}

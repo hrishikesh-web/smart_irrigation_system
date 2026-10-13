@@ -1,0 +1,44 @@
+{
+  "created": "2026-10-12T23:42:24",
+  "run_dir": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\runs\\train_yolo11n_512_20261012-233429",
+  "best_checkpoint": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\runs\\train_yolo11n_512_20261012-233429\\weights\\best.pt",
+  "best_checkpoint_sha256": "ac2e0080cfb69a5bcb4875d029544f6d7dc40eafd3ef521e94ec30c7fc03520c",
+  "starting_checkpoint": {
+    "name": "yolo11n",
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+    "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+    "size_bytes": 5613764
+  },
+  "dataset": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\dataset",
+  "images_per_split": {
+    "train": 884,
+    "val": 190,
+    "test": 190
+  },
+  "class_names": {
+    "0": "crop",
+    "1": "weed"
+  },
+  "settings": {
+    "model": "yolo11n",
+    "epochs": 80,
+    "patience": 25,
+    "imgsz": 512,
+    "batch": 16,
+    "workers": 4,
+    "seed": 42,
+    "device": "0"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "os": "Windows-11-10.0.26200-SP0",
+    "torch": "2.14.1+cu126",
+    "torch_cuda_build": "12.6",
+    "ultralytics": "8.4.175",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_vram_gb": 8.0,
+    "device": "0"
+  },
+  "note": "Validation metrics from training are in run_dir/results.csv. Held-out TEST metrics come only from evaluate.py."
+}

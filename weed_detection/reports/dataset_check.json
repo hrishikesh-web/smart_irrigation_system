@@ -1,0 +1,43 @@
+{
+  "class_names": {
+    "0": "crop",
+    "1": "weed"
+  },
+  "num_images": 1300,
+  "num_label_files": 1300,
+  "orphan_label_files": [],
+  "images_with_problems": 0,
+  "boxes_per_class": {
+    "crop": 1212,
+    "weed": 860
+  },
+  "images_by_main_class": {
+    "weed": 666,
+    "crop": 634
+  },
+  "images_containing_both_classes": 2,
+  "image_sizes": {
+    "512x512": 1300
+  },
+  "box_area_fraction": {
+    "min": 0.0018,
+    "median": 0.2689,
+    "max": 0.9883,
+    "tiny_boxes_under_1pct": 296
+  },
+  "exact_duplicate_groups": 0,
+  "duplicate_threshold": 56,
+  "duplicate_groups": 289,
+  "single_images_without_copies": 0,
+  "largest_groups": [
+    17,
+    16,
+    16,
+    12,
+    9
+  ],
+  "contradictory_groups": 35,
+  "contradictory_groups_tied": 1,
+  "images_in_contradictory_groups": 221,
+  "fatal_errors": []
+}

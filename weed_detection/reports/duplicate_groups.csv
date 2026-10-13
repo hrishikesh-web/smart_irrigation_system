@@ -1,0 +1,290 @@
+group_id,size,contradictory,tie,majority_class,votes,images
+0,16,False,False,weed,"{""weed"": 16}",agri_0_1009 agri_0_1068 agri_0_4164 agri_0_4222 agri_0_5592 agri_0_5967 agri_0_6182 agri_0_6823 agri_0_6977 agri_0_7241 agri_0_7497 agri_0_7669 agri_0_7977 agri_0_8623 agri_0_915 agri_0_9468
+1,8,False,False,weed,"{""weed"": 8}",agri_0_1017 agri_0_3379 agri_0_4013 agri_0_4302 agri_0_5873 agri_0_6292 agri_0_7585 agri_0_8105
+2,8,False,False,weed,"{""weed"": 8}",agri_0_1018 agri_0_1140 agri_0_1258 agri_0_4014 agri_0_4526 agri_0_5318 agri_0_5450 agri_0_9385
+3,9,False,False,weed,"{""weed"": 9}",agri_0_1020 agri_0_2136 agri_0_3680 agri_0_4300 agri_0_4670 agri_0_4846 agri_0_5542 agri_0_6708 agri_0_9960
+4,8,False,False,weed,"{""weed"": 8}",agri_0_1024 agri_0_1784 agri_0_1908 agri_0_4010 agri_0_7285 agri_0_752 agri_0_8518 agri_0_9485
+5,3,False,False,crop,"{""crop"": 3}",agri_0_1026 agri_0_8358 agri_0_8956
+6,3,False,False,crop,"{""crop"": 3}",agri_0_1028 agri_0_6387 agri_0_7838
+7,3,False,False,crop,"{""crop"": 3}",agri_0_1041 agri_0_6520 agri_0_7204
+8,3,False,False,crop,"{""crop"": 3}",agri_0_1053 agri_0_5306 agri_0_7306
+9,6,True,False,weed,"{""crop"": 1, ""weed"": 5}",agri_0_106 agri_0_1570 agri_0_5362 agri_0_6268 agri_0_6679 agri_0_82
+10,6,True,False,weed,"{""weed"": 5, ""crop"": 1}",agri_0_1079 agri_0_223 agri_0_3282 agri_0_4028 agri_0_6166 agri_0_7104
+11,3,False,False,crop,"{""crop"": 3}",agri_0_1082 agri_0_3247 agri_0_3471
+12,3,False,False,crop,"{""crop"": 3}",agri_0_1083 agri_0_3914 agri_0_5856
+13,3,False,False,crop,"{""crop"": 3}",agri_0_1094 agri_0_8094 agri_0_8338
+14,8,False,False,weed,"{""weed"": 8}",agri_0_1095 agri_0_3573 agri_0_4690 agri_0_5216 agri_0_5578 agri_0_784 agri_0_8297 agri_0_8708
+15,3,False,False,crop,"{""crop"": 3}",agri_0_110 agri_0_5794 agri_0_7603
+16,7,False,False,weed,"{""weed"": 7}",agri_0_1114 agri_0_2722 agri_0_3129 agri_0_3398 agri_0_3536 agri_0_3682 agri_0_5160
+17,3,False,False,crop,"{""crop"": 3}",agri_0_1119 agri_0_4237 agri_0_9284
+18,3,False,False,crop,"{""crop"": 3}",agri_0_1123 agri_0_1221 agri_0_4214
+19,3,False,False,crop,"{""crop"": 3}",agri_0_1129 agri_0_136 agri_0_5352
+20,7,False,False,weed,"{""weed"": 7}",agri_0_113 agri_0_1166 agri_0_2465 agri_0_6574 agri_0_7459 agri_0_8733 agri_0_9264
+21,8,False,False,weed,"{""weed"": 8}",agri_0_1130 agri_0_4316 agri_0_4945 agri_0_7443 agri_0_7546 agri_0_823 agri_0_8618 agri_0_8834
+22,3,False,False,crop,"{""crop"": 3}",agri_0_114 agri_0_5270 agri_0_6100
+23,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_1146 agri_0_1835 agri_0_2749 agri_0_2895 agri_0_3054 agri_0_7865 agri_0_9850 agri_0_9872
+24,9,True,False,weed,"{""crop"": 1, ""weed"": 8}",agri_0_1168 agri_0_2769 agri_0_3648 agri_0_3949 agri_0_4213 agri_0_607 agri_0_7839 agri_0_8072 agri_0_9376
+25,3,False,False,crop,"{""crop"": 3}",agri_0_1171 agri_0_6565 agri_0_7579
+26,9,True,False,weed,"{""weed"": 8, ""crop"": 1}",agri_0_1173 agri_0_1619 agri_0_2786 agri_0_3856 agri_0_7162 agri_0_7209 agri_0_7814 agri_0_8108 agri_0_8800
+27,3,False,False,crop,"{""crop"": 3}",agri_0_1174 agri_0_3283 agri_0_8634
+28,3,False,False,crop,"{""crop"": 3}",agri_0_1177 agri_0_1317 agri_0_5625
+29,7,True,False,weed,"{""weed"": 6, ""crop"": 1}",agri_0_1192 agri_0_1707 agri_0_3234 agri_0_3828 agri_0_7037 agri_0_7989 agri_0_9892
+30,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_1193 agri_0_1882 agri_0_2400 agri_0_4085 agri_0_4964 agri_0_7283 agri_0_7806 agri_0_9527
+31,3,False,False,crop,"{""crop"": 3}",agri_0_1198 agri_0_3276 agri_0_9796
+32,7,False,False,weed,"{""weed"": 7}",agri_0_1210 agri_0_2545 agri_0_5384 agri_0_6110 agri_0_614 agri_0_7135 agri_0_9927
+33,3,False,False,crop,"{""crop"": 3}",agri_0_1211 agri_0_491 agri_0_8682
+34,3,False,False,crop,"{""crop"": 3}",agri_0_1214 agri_0_5336 agri_0_935
+35,9,False,False,weed,"{""weed"": 9}",agri_0_1215 agri_0_2999 agri_0_3023 agri_0_3346 agri_0_6216 agri_0_7055 agri_0_7601 agri_0_9403 agri_0_9575
+36,9,False,False,weed,"{""weed"": 9}",agri_0_122 agri_0_1985 agri_0_2144 agri_0_2522 agri_0_3842 agri_0_5508 agri_0_567 agri_0_7362 agri_0_8252
+37,3,False,False,crop,"{""crop"": 3}",agri_0_1242 agri_0_654 agri_0_7573
+38,8,False,False,weed,"{""weed"": 8}",agri_0_126 agri_0_1572 agri_0_3081 agri_0_4335 agri_0_4571 agri_0_4684 agri_0_5711 agri_0_6034
+39,3,False,False,crop,"{""crop"": 3}",agri_0_1260 agri_0_3233 agri_0_7588
+40,3,False,False,crop,"{""crop"": 3}",agri_0_129 agri_0_1793 agri_0_2077
+41,3,False,False,crop,"{""crop"": 3}",agri_0_131 agri_0_3468 agri_0_7878
+42,3,False,False,crop,"{""crop"": 3}",agri_0_1314 agri_0_1351 agri_0_5871
+43,6,False,False,weed,"{""weed"": 6}",agri_0_1320 agri_0_4393 agri_0_7901 agri_0_8073 agri_0_8654 agri_0_9881
+44,3,False,False,crop,"{""crop"": 3}",agri_0_1332 agri_0_3229 agri_0_551
+45,9,False,False,weed,"{""weed"": 9}",agri_0_1334 agri_0_3231 agri_0_4073 agri_0_5248 agri_0_5605 agri_0_7201 agri_0_7813 agri_0_8642 agri_0_8848
+46,3,False,False,crop,"{""crop"": 3}",agri_0_1342 agri_0_2681 agri_0_7119
+47,9,False,False,weed,"{""weed"": 9}",agri_0_1350 agri_0_1966 agri_0_2807 agri_0_5182 agri_0_6701 agri_0_6724 agri_0_8417 agri_0_8620 agri_0_9266
+48,3,False,False,crop,"{""crop"": 3}",agri_0_1361 agri_0_4553 agri_0_7091
+49,8,False,False,weed,"{""weed"": 8}",agri_0_1385 agri_0_1508 agri_0_4029 agri_0_4575 agri_0_5366 agri_0_7039 agri_0_7656 agri_0_9963
+50,9,True,False,weed,"{""weed"": 8, ""crop"": 1}",agri_0_1393 agri_0_224 agri_0_3100 agri_0_347 agri_0_4055 agri_0_5622 agri_0_5981 agri_0_6523 agri_0_9425
+51,3,False,False,crop,"{""crop"": 3}",agri_0_1395 agri_0_3200 agri_0_600
+52,3,False,False,crop,"{""crop"": 3}",agri_0_14 agri_0_2484 agri_0_8991
+53,8,False,False,weed,"{""weed"": 8}",agri_0_1420 agri_0_1815 agri_0_6154 agri_0_6481 agri_0_714 agri_0_7156 agri_0_9696 agri_0_9952
+54,3,False,False,crop,"{""crop"": 3}",agri_0_1463 agri_0_5994 agri_0_866
+55,6,False,False,crop,"{""crop"": 6}",agri_0_1477 agri_0_3555 agri_0_3958 agri_0_6212 agri_0_631 agri_0_7716
+56,3,True,False,crop,"{""weed"": 1, ""crop"": 2}",agri_0_1494 agri_0_8265 agri_0_9891
+57,3,False,False,crop,"{""crop"": 3}",agri_0_1499 agri_0_2159 agri_0_6572
+58,16,True,False,weed,"{""weed"": 15, ""crop"": 1}",agri_0_1509 agri_0_1858 agri_0_2927 agri_0_3880 agri_0_3992 agri_0_4362 agri_0_462 agri_0_5042 agri_0_5616 agri_0_6604 agri_0_667 agri_0_7550 agri_0_7824 agri_0_7856 agri_0_8409 agri_0_8655
+59,8,False,False,weed,"{""weed"": 8}",agri_0_151 agri_0_2685 agri_0_277 agri_0_3213 agri_0_3514 agri_0_377 agri_0_7208 agri_0_7942
+60,7,False,False,weed,"{""weed"": 7}",agri_0_1512 agri_0_1731 agri_0_1841 agri_0_1992 agri_0_2694 agri_0_526 agri_0_8886
+61,3,False,False,crop,"{""crop"": 3}",agri_0_1515 agri_0_4909 agri_0_5932
+62,8,False,False,weed,"{""weed"": 8}",agri_0_1518 agri_0_2385 agri_0_5243 agri_0_5686 agri_0_6010 agri_0_6411 agri_0_7464 agri_0_871
+63,3,False,False,crop,"{""crop"": 3}",agri_0_1530 agri_0_1873 agri_0_5426
+64,3,False,False,crop,"{""crop"": 3}",agri_0_1543 agri_0_2121 agri_0_6126
+65,8,False,False,weed,"{""weed"": 8}",agri_0_156 agri_0_5239 agri_0_5246 agri_0_6078 agri_0_6393 agri_0_7340 agri_0_8269 agri_0_8675
+66,3,False,False,crop,"{""crop"": 3}",agri_0_1564 agri_0_1932 agri_0_4323
+67,8,False,False,weed,"{""weed"": 8}",agri_0_1590 agri_0_1692 agri_0_2863 agri_0_2901 agri_0_6735 agri_0_7658 agri_0_8585 agri_0_899
+68,8,False,False,weed,"{""weed"": 8}",agri_0_1610 agri_0_2204 agri_0_5231 agri_0_6 agri_0_6326 agri_0_7219 agri_0_8143 agri_0_9095
+69,9,False,False,weed,"{""weed"": 9}",agri_0_1612 agri_0_3607 agri_0_4455 agri_0_466 agri_0_4729 agri_0_7079 agri_0_7544 agri_0_8899 agri_0_9143
+70,8,False,False,weed,"{""weed"": 8}",agri_0_1627 agri_0_2393 agri_0_2951 agri_0_3259 agri_0_4436 agri_0_6013 agri_0_8262 agri_0_8866
+71,3,False,False,crop,"{""crop"": 3}",agri_0_1630 agri_0_4675 agri_0_8803
+72,3,False,False,crop,"{""crop"": 3}",agri_0_164 agri_0_6858 agri_0_8225
+73,9,False,False,weed,"{""weed"": 9}",agri_0_1642 agri_0_1993 agri_0_3328 agri_0_4388 agri_0_566 agri_0_6653 agri_0_6713 agri_0_7705 agri_0_8330
+74,9,False,False,weed,"{""weed"": 9}",agri_0_1677 agri_0_3045 agri_0_3492 agri_0_3703 agri_0_401 agri_0_5266 agri_0_6058 agri_0_9153 agri_0_9354
+75,3,False,False,crop,"{""crop"": 3}",agri_0_1693 agri_0_3093 agri_0_7636
+76,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_172 agri_0_3116 agri_0_3260 agri_0_5949 agri_0_6040 agri_0_6765 agri_0_6827 agri_0_8636
+77,3,False,False,crop,"{""crop"": 3}",agri_0_1722 agri_0_5090 agri_0_7072
+78,8,False,False,weed,"{""weed"": 8}",agri_0_1729 agri_0_1779 agri_0_2595 agri_0_4391 agri_0_4913 agri_0_5568 agri_0_5773 agri_0_8546
+79,3,False,False,crop,"{""crop"": 3}",agri_0_1750 agri_0_8794 agri_0_9032
+80,6,False,False,crop,"{""crop"": 6}",agri_0_177 agri_0_2438 agri_0_7325 agri_0_7370 agri_0_7795 agri_0_9908
+81,3,False,False,crop,"{""crop"": 3}",agri_0_1771 agri_0_6447 agri_0_7288
+82,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_1788 agri_0_5458 agri_0_5935 agri_0_6225 agri_0_6469 agri_0_8671 agri_0_8747 agri_0_9764
+83,9,False,False,weed,"{""weed"": 9}",agri_0_1806 agri_0_2345 agri_0_3797 agri_0_4240 agri_0_5632 agri_0_5693 agri_0_8842 agri_0_9049 agri_0_9586
+84,3,False,False,crop,"{""crop"": 3}",agri_0_1810 agri_0_2915 agri_0_9132
+85,3,False,False,crop,"{""crop"": 3}",agri_0_1814 agri_0_1859 agri_0_9871
+86,3,False,False,crop,"{""crop"": 3}",agri_0_1830 agri_0_773 agri_0_9294
+87,8,True,False,weed,"{""crop"": 1, ""weed"": 7}",agri_0_1849 agri_0_4312 agri_0_4665 agri_0_4845 agri_0_6863 agri_0_8322 agri_0_8516 agri_0_9458
+88,7,False,False,weed,"{""weed"": 7}",agri_0_1851 agri_0_2547 agri_0_2549 agri_0_5747 agri_0_7018 agri_0_7405 agri_0_8982
+89,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_1852 agri_0_4002 agri_0_7468
+90,3,False,False,crop,"{""crop"": 3}",agri_0_1862 agri_0_7796 agri_0_9367
+91,8,False,False,weed,"{""weed"": 8}",agri_0_1868 agri_0_2326 agri_0_4778 agri_0_7869 agri_0_84 agri_0_8830 agri_0_8904 agri_0_9179
+92,3,False,False,crop,"{""crop"": 3}",agri_0_1878 agri_0_4033 agri_0_5178
+93,9,False,False,weed,"{""weed"": 9}",agri_0_1885 agri_0_2370 agri_0_3077 agri_0_7375 agri_0_7756 agri_0_7958 agri_0_8821 agri_0_9260 agri_0_9445
+94,3,False,False,crop,"{""crop"": 3}",agri_0_1888 agri_0_5435 agri_0_8184
+95,2,False,False,crop,"{""crop"": 2}",agri_0_1909 agri_0_3778
+96,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_1926 agri_0_3074 agri_0_4707
+97,3,False,False,crop,"{""crop"": 3}",agri_0_1928 agri_0_2271 agri_0_8783
+98,6,True,False,crop,"{""crop"": 5, ""weed"": 1}",agri_0_1929 agri_0_2639 agri_0_3820 agri_0_5389 agri_0_7491 agri_0_9701
+99,8,False,False,weed,"{""weed"": 8}",agri_0_1941 agri_0_3666 agri_0_3679 agri_0_6581 agri_0_7637 agri_0_8126 agri_0_8393 agri_0_9161
+100,3,False,False,crop,"{""crop"": 3}",agri_0_1945 agri_0_7153 agri_0_7985
+101,3,False,False,crop,"{""crop"": 3}",agri_0_1955 agri_0_3284 agri_0_787
+102,3,False,False,crop,"{""crop"": 3}",agri_0_1959 agri_0_6917 agri_0_7232
+103,6,False,False,crop,"{""crop"": 6}",agri_0_1960 agri_0_3331 agri_0_4167 agri_0_8478 agri_0_8811 agri_0_9740
+104,17,True,False,weed,"{""weed"": 16, ""crop"": 1}",agri_0_1961 agri_0_2604 agri_0_2653 agri_0_3057 agri_0_3278 agri_0_3989 agri_0_3990 agri_0_4685 agri_0_5992 agri_0_6610 agri_0_6993 agri_0_7344 agri_0_808 agri_0_9278 agri_0_9406 agri_0_9450 agri_0_9773
+105,7,False,False,weed,"{""weed"": 7}",agri_0_1988 agri_0_3473 agri_0_4947 agri_0_7868 agri_0_7939 agri_0_9085 agri_0_9772
+106,3,False,False,crop,"{""crop"": 3}",agri_0_1990 agri_0_3152 agri_0_8752
+107,9,False,False,weed,"{""weed"": 9}",agri_0_2001 agri_0_270 agri_0_3394 agri_0_3603 agri_0_3913 agri_0_4937 agri_0_5716 agri_0_5736 agri_0_8023
+108,9,False,False,weed,"{""weed"": 9}",agri_0_203 agri_0_2040 agri_0_2390 agri_0_3143 agri_0_4985 agri_0_6690 agri_0_7031 agri_0_8046 agri_0_9272
+109,6,False,False,crop,"{""crop"": 6}",agri_0_2034 agri_0_2330 agri_0_4484 agri_0_6857 agri_0_744 agri_0_8689
+110,7,False,False,weed,"{""weed"": 7}",agri_0_2082 agri_0_4488 agri_0_4862 agri_0_5225 agri_0_7844 agri_0_8107 agri_0_9327
+111,2,False,False,crop,"{""crop"": 2}",agri_0_2088 agri_0_2714
+112,2,False,False,crop,"{""crop"": 2}",agri_0_2095 agri_0_60
+113,5,False,False,weed,"{""weed"": 5}",agri_0_2158 agri_0_39 agri_0_4753 agri_0_76 agri_0_9116
+114,3,False,False,crop,"{""crop"": 3}",agri_0_2161 agri_0_3613 agri_0_6880
+115,3,False,False,crop,"{""crop"": 3}",agri_0_2180 agri_0_4218 agri_0_7141
+116,3,False,False,crop,"{""crop"": 3}",agri_0_221 agri_0_725 agri_0_789
+117,3,False,False,crop,"{""crop"": 3}",agri_0_2221 agri_0_4951 agri_0_6668
+118,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_2226 agri_0_6339 agri_0_6870
+119,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_2228 agri_0_248 agri_0_2861 agri_0_3535 agri_0_395 agri_0_4635 agri_0_5615 agri_0_5819
+120,8,False,False,weed,"{""weed"": 8}",agri_0_2244 agri_0_3156 agri_0_3805 agri_0_629 agri_0_8413 agri_0_8857 agri_0_909 agri_0_9875
+121,3,False,False,crop,"{""crop"": 3}",agri_0_2256 agri_0_5880 agri_0_7177
+122,3,False,False,crop,"{""crop"": 3}",agri_0_2263 agri_0_2751 agri_0_840
+123,3,False,False,crop,"{""crop"": 3}",agri_0_2278 agri_0_4216 agri_0_7517
+124,9,False,False,weed,"{""weed"": 9}",agri_0_2320 agri_0_2513 agri_0_2606 agri_0_4333 agri_0_4916 agri_0_543 agri_0_6119 agri_0_6899 agri_0_9208
+125,3,False,False,crop,"{""crop"": 3}",agri_0_2322 agri_0_3022 agri_0_6042
+126,3,False,False,crop,"{""crop"": 3}",agri_0_2323 agri_0_5521 agri_0_9474
+127,2,False,False,crop,"{""crop"": 2}",agri_0_2332 agri_0_9381
+128,3,False,False,crop,"{""crop"": 3}",agri_0_2363 agri_0_2873 agri_0_7158
+129,3,False,False,crop,"{""crop"": 3}",agri_0_237 agri_0_4948 agri_0_6031
+130,3,False,False,crop,"{""crop"": 3}",agri_0_2405 agri_0_2442 agri_0_8121
+131,3,False,False,crop,"{""crop"": 3}",agri_0_2407 agri_0_2567 agri_0_9109
+132,3,False,False,crop,"{""crop"": 3}",agri_0_2441 agri_0_5019 agri_0_8815
+133,9,False,False,weed,"{""weed"": 9}",agri_0_2450 agri_0_2670 agri_0_299 agri_0_3198 agri_0_357 agri_0_4557 agri_0_4651 agri_0_4944 agri_0_683
+134,12,False,False,weed,"{""weed"": 12}",agri_0_2469 agri_0_2498 agri_0_2530 agri_0_3186 agri_0_452 agri_0_4535 agri_0_4659 agri_0_6769 agri_0_7070 agri_0_7144 agri_0_8095 agri_0_954
+135,3,False,False,crop,"{""crop"": 3}",agri_0_2471 agri_0_5644 agri_0_8141
+136,3,False,False,crop,"{""crop"": 3}",agri_0_249 agri_0_6011 agri_0_9220
+137,9,True,False,weed,"{""weed"": 8, ""crop"": 1}",agri_0_2495 agri_0_5474 agri_0_5688 agri_0_8490 agri_0_8926 agri_0_9055 agri_0_9439 agri_0_9532 agri_0_9861
+138,3,False,False,crop,"{""crop"": 3}",agri_0_2521 agri_0_3039 agri_0_5118
+139,3,False,False,crop,"{""crop"": 3}",agri_0_2525 agri_0_4467 agri_0_8609
+140,3,False,False,crop,"{""crop"": 3}",agri_0_2533 agri_0_3439 agri_0_4301
+141,3,False,False,crop,"{""crop"": 3}",agri_0_2550 agri_0_5350 agri_0_8565
+142,3,False,False,crop,"{""crop"": 3}",agri_0_2551 agri_0_4479 agri_0_618
+143,3,False,False,crop,"{""crop"": 3}",agri_0_2582 agri_0_4394 agri_0_6879
+144,3,False,False,crop,"{""crop"": 3}",agri_0_2633 agri_0_3964 agri_0_5087
+145,3,False,False,crop,"{""crop"": 3}",agri_0_2644 agri_0_5121 agri_0_6605
+146,6,True,False,crop,"{""crop"": 5, ""weed"": 1}",agri_0_2649 agri_0_3564 agri_0_402 agri_0_4955 agri_0_8388 agri_0_9500
+147,6,False,False,crop,"{""crop"": 6}",agri_0_2654 agri_0_4892 agri_0_5260 agri_0_7470 agri_0_9299 agri_0_9617
+148,3,False,False,crop,"{""crop"": 3}",agri_0_2675 agri_0_9770 agri_0_9804
+149,3,False,False,crop,"{""crop"": 3}",agri_0_2686 agri_0_8085 agri_0_9502
+150,3,False,False,crop,"{""crop"": 3}",agri_0_2692 agri_0_3657 agri_0_4365
+151,8,False,False,weed,"{""weed"": 8}",agri_0_2697 agri_0_3136 agri_0_3592 agri_0_3985 agri_0_5077 agri_0_5593 agri_0_9043 agri_0_9183
+152,3,False,False,crop,"{""crop"": 3}",agri_0_272 agri_0_3869 agri_0_6395
+153,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_2727 agri_0_3228 agri_0_550 agri_0_6468 agri_0_6675 agri_0_7574 agri_0_8008 agri_0_8702
+154,3,False,False,crop,"{""crop"": 3}",agri_0_2735 agri_0_376 agri_0_6801
+155,8,False,False,weed,"{""weed"": 8}",agri_0_2772 agri_0_3412 agri_0_3534 agri_0_4015 agri_0_5723 agri_0_6094 agri_0_6308 agri_0_7877
+156,3,False,False,crop,"{""crop"": 3}",agri_0_2774 agri_0_2835 agri_0_6196
+157,3,False,False,crop,"{""crop"": 3}",agri_0_2792 agri_0_5053 agri_0_5401
+158,3,False,False,crop,"{""crop"": 3}",agri_0_2808 agri_0_3741 agri_0_7495
+159,8,False,False,weed,"{""weed"": 8}",agri_0_2812 agri_0_3667 agri_0_3756 agri_0_4127 agri_0_417 agri_0_6158 agri_0_9435 agri_0_9612
+160,9,False,False,weed,"{""weed"": 9}",agri_0_2825 agri_0_3289 agri_0_3374 agri_0_3796 agri_0_3860 agri_0_6540 agri_0_7534 agri_0_7842 agri_0_9971
+161,3,False,False,crop,"{""crop"": 3}",agri_0_2854 agri_0_5928 agri_0_9660
+162,9,False,False,weed,"{""weed"": 9}",agri_0_2876 agri_0_4118 agri_0_4265 agri_0_4267 agri_0_4617 agri_0_4811 agri_0_5661 agri_0_882 agri_0_8913
+163,2,False,False,crop,"{""crop"": 2}",agri_0_2894 agri_0_7284
+164,3,False,False,crop,"{""crop"": 3}",agri_0_2906 agri_0_4226 agri_0_6537
+165,3,False,False,crop,"{""crop"": 3}",agri_0_2923 agri_0_7866 agri_0_9152
+166,3,False,False,crop,"{""crop"": 3}",agri_0_2964 agri_0_6697 agri_0_7943
+167,3,False,False,crop,"{""crop"": 3}",agri_0_2971 agri_0_3720 agri_0_5786
+168,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_2997 agri_0_4687 agri_0_9523
+169,3,False,False,crop,"{""crop"": 3}",agri_0_3 agri_0_4058 agri_0_4125
+170,3,False,False,crop,"{""crop"": 3}",agri_0_3008 agri_0_7925 agri_0_8104
+171,3,False,False,crop,"{""crop"": 3}",agri_0_301 agri_0_7188 agri_0_7734
+172,9,False,False,weed,"{""weed"": 9}",agri_0_3014 agri_0_5282 agri_0_5587 agri_0_5706 agri_0_6860 agri_0_8168 agri_0_8496 agri_0_8698 agri_0_9526
+173,3,False,False,crop,"{""crop"": 3}",agri_0_3061 agri_0_5210 agri_0_6848
+174,3,False,False,crop,"{""crop"": 3}",agri_0_3075 agri_0_5088 agri_0_5896
+175,3,False,False,crop,"{""crop"": 3}",agri_0_3088 agri_0_8704 agri_0_8914
+176,3,False,False,crop,"{""crop"": 3}",agri_0_3160 agri_0_5361 agri_0_9451
+177,3,False,False,crop,"{""crop"": 3}",agri_0_318 agri_0_4235 agri_0_7963
+178,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_3203 agri_0_5808 agri_0_6312
+179,3,False,False,crop,"{""crop"": 3}",agri_0_3226 agri_0_5718 agri_0_6417
+180,3,False,False,crop,"{""crop"": 3}",agri_0_3230 agri_0_3509 agri_0_665
+181,3,False,False,crop,"{""crop"": 3}",agri_0_326 agri_0_596 agri_0_7222
+182,3,False,False,crop,"{""crop"": 3}",agri_0_3290 agri_0_3748 agri_0_7123
+183,3,False,False,crop,"{""crop"": 3}",agri_0_333 agri_0_3928 agri_0_4645
+184,3,False,False,crop,"{""crop"": 3}",agri_0_3378 agri_0_815 agri_0_920
+185,7,False,False,weed,"{""weed"": 7}",agri_0_3388 agri_0_4019 agri_0_6287 agri_0_630 agri_0_8062 agri_0_934 agri_0_9810
+186,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_3403 agri_0_4016 agri_0_5858
+187,9,False,False,weed,"{""weed"": 9}",agri_0_3404 agri_0_3442 agri_0_5039 agri_0_7382 agri_0_8905 agri_0_9135 agri_0_9252 agri_0_9727 agri_0_975
+188,3,False,False,crop,"{""crop"": 3}",agri_0_3414 agri_0_3971 agri_0_9492
+189,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_3423 agri_0_4068 agri_0_5365 agri_0_5529 agri_0_5591 agri_0_5737 agri_0_6279 agri_0_7092
+190,3,False,False,crop,"{""crop"": 3}",agri_0_3480 agri_0_4771 agri_0_5136
+191,3,False,False,crop,"{""crop"": 3}",agri_0_3500 agri_0_3944 agri_0_8556
+192,8,False,False,weed,"{""weed"": 8}",agri_0_352 agri_0_3858 agri_0_4273 agri_0_4348 agri_0_4789 agri_0_6258 agri_0_7749 agri_0_8140
+193,3,False,False,crop,"{""crop"": 3}",agri_0_3530 agri_0_3993 agri_0_5939
+194,8,False,False,weed,"{""weed"": 8}",agri_0_3556 agri_0_4502 agri_0_5184 agri_0_5744 agri_0_584 agri_0_6643 agri_0_7625 agri_0_8445
+195,3,False,False,crop,"{""crop"": 3}",agri_0_3569 agri_0_5512 agri_0_5818
+196,3,False,False,crop,"{""crop"": 3}",agri_0_3577 agri_0_81 agri_0_9608
+197,3,False,False,crop,"{""crop"": 3}",agri_0_3604 agri_0_4516 agri_0_4540
+198,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_3647 agri_0_487 agri_0_6354 agri_0_6803 agri_0_7466 agri_0_757 agri_0_8838 agri_0_941
+199,3,True,False,crop,"{""weed"": 1, ""crop"": 2}",agri_0_3669 agri_0_3995 agri_0_8422
+200,8,False,False,weed,"{""weed"": 8}",agri_0_3690 agri_0_3900 agri_0_4122 agri_0_4903 agri_0_6092 agri_0_6750 agri_0_7245 agri_0_780
+201,3,False,False,crop,"{""crop"": 3}",agri_0_3706 agri_0_4530 agri_0_4910
+202,3,False,False,crop,"{""crop"": 3}",agri_0_372 agri_0_8741 agri_0_9707
+203,3,False,False,crop,"{""crop"": 3}",agri_0_3736 agri_0_7514 agri_0_9226
+204,9,False,False,weed,"{""weed"": 9}",agri_0_3744 agri_0_4620 agri_0_5953 agri_0_6474 agri_0_6851 agri_0_6891 agri_0_7105 agri_0_8595 agri_0_8960
+205,3,False,False,crop,"{""crop"": 3}",agri_0_3746 agri_0_7623 agri_0_8421
+206,6,False,False,weed,"{""weed"": 6}",agri_0_3752 agri_0_4184 agri_0_5169 agri_0_9279 agri_0_9873 agri_0_9916
+207,9,False,False,weed,"{""weed"": 9}",agri_0_3807 agri_0_5597 agri_0_6652 agri_0_7586 agri_0_8267 agri_0_9062 agri_0_911 agri_0_9148 agri_0_9216
+208,2,False,False,crop,"{""crop"": 2}",agri_0_3823 agri_0_603
+209,3,False,False,crop,"{""crop"": 3}",agri_0_3862 agri_0_4123 agri_0_9488
+210,3,False,False,crop,"{""crop"": 3}",agri_0_3925 agri_0_6440 agri_0_8029
+211,3,False,False,crop,"{""crop"": 3}",agri_0_3943 agri_0_5947 agri_0_9404
+212,3,False,False,crop,"{""crop"": 3}",agri_0_3966 agri_0_6852 agri_0_8489
+213,3,False,False,crop,"{""crop"": 3}",agri_0_3983 agri_0_864 agri_0_9030
+214,6,False,False,weed,"{""weed"": 6}",agri_0_4009 agri_0_4560 agri_0_4972 agri_0_4984 agri_0_6189 agri_0_9088
+215,2,False,False,crop,"{""crop"": 2}",agri_0_4017 agri_0_5134
+216,2,False,False,crop,"{""crop"": 2}",agri_0_4034 agri_0_5823
+217,9,False,False,weed,"{""weed"": 9}",agri_0_4064 agri_0_4419 agri_0_6112 agri_0_6703 agri_0_6778 agri_0_6783 agri_0_7106 agri_0_8163 agri_0_9010
+218,8,False,False,weed,"{""weed"": 8}",agri_0_4107 agri_0_5523 agri_0_6222 agri_0_6355 agri_0_6820 agri_0_8165 agri_0_8746 agri_0_9240
+219,3,False,False,crop,"{""crop"": 3}",agri_0_4112 agri_0_7266 agri_0_7681
+220,3,False,False,crop,"{""crop"": 3}",agri_0_4113 agri_0_7388 agri_0_8463
+221,3,False,False,crop,"{""crop"": 3}",agri_0_4116 agri_0_5834 agri_0_8058
+222,3,False,False,crop,"{""crop"": 3}",agri_0_4209 agri_0_5821 agri_0_6039
+223,3,False,False,crop,"{""crop"": 3}",agri_0_4276 agri_0_5100 agri_0_9698
+224,8,True,False,weed,"{""weed"": 7, ""crop"": 1}",agri_0_4326 agri_0_5006 agri_0_6498 agri_0_7358 agri_0_8583 agri_0_8797 agri_0_9206 agri_0_991
+225,5,False,False,weed,"{""weed"": 5}",agri_0_4337 agri_0_4785 agri_0_6160 agri_0_7675 agri_0_8995
+226,3,False,False,crop,"{""crop"": 3}",agri_0_4355 agri_0_4936 agri_0_9145
+227,2,True,True,,"{""crop"": 1, ""weed"": 1}",agri_0_4356 agri_0_6157
+228,3,False,False,crop,"{""crop"": 3}",agri_0_437 agri_0_5666 agri_0_626
+229,3,False,False,crop,"{""crop"": 3}",agri_0_4383 agri_0_8044 agri_0_8935
+230,3,False,False,crop,"{""crop"": 3}",agri_0_4416 agri_0_5128 agri_0_9198
+231,3,False,False,crop,"{""crop"": 3}",agri_0_4449 agri_0_484 agri_0_9172
+232,3,False,False,crop,"{""crop"": 3}",agri_0_4463 agri_0_9424 agri_0_9618
+233,3,False,False,crop,"{""crop"": 3}",agri_0_4499 agri_0_4508 agri_0_8872
+234,3,False,False,crop,"{""crop"": 3}",agri_0_4519 agri_0_7959 agri_0_8440
+235,3,False,False,crop,"{""crop"": 3}",agri_0_456 agri_0_4718 agri_0_9000
+236,2,False,False,crop,"{""crop"": 2}",agri_0_4561 agri_0_7499
+237,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_4586 agri_0_4806 agri_0_9486
+238,3,True,False,crop,"{""crop"": 2, ""weed"": 1}",agri_0_4618 agri_0_7707 agri_0_8663
+239,3,True,False,crop,"{""weed"": 1, ""crop"": 2}",agri_0_4702 agri_0_6831 agri_0_9498
+240,3,False,False,crop,"{""crop"": 3}",agri_0_4751 agri_0_879 agri_0_9563
+241,3,True,False,crop,"{""weed"": 1, ""crop"": 2}",agri_0_4793 agri_0_5938 agri_0_8161
+242,3,False,False,crop,"{""crop"": 3}",agri_0_4838 agri_0_8305 agri_0_9430
+243,3,False,False,crop,"{""crop"": 3}",agri_0_495 agri_0_5780 agri_0_9562
+244,3,False,False,crop,"{""crop"": 3}",agri_0_4994 agri_0_8034 agri_0_8146
+245,3,False,False,crop,"{""crop"": 3}",agri_0_5017 agri_0_6814 agri_0_6904
+246,3,False,False,crop,"{""crop"": 3}",agri_0_5066 agri_0_5257 agri_0_6504
+247,2,False,False,crop,"{""crop"": 2}",agri_0_5145 agri_0_5502
+248,3,False,False,crop,"{""crop"": 3}",agri_0_5147 agri_0_7613 agri_0_9874
+249,3,False,False,crop,"{""crop"": 3}",agri_0_5208 agri_0_5641 agri_0_9888
+250,3,False,False,crop,"{""crop"": 3}",agri_0_5220 agri_0_561 agri_0_5733
+251,3,False,False,crop,"{""crop"": 3}",agri_0_5370 agri_0_544 agri_0_657
+252,3,False,False,crop,"{""crop"": 3}",agri_0_5461 agri_0_57 agri_0_838
+253,3,False,False,crop,"{""crop"": 3}",agri_0_5487 agri_0_5961 agri_0_6276
+254,2,False,False,crop,"{""crop"": 2}",agri_0_5494 agri_0_7279
+255,2,False,False,crop,"{""crop"": 2}",agri_0_5627 agri_0_9047
+256,3,False,False,crop,"{""crop"": 3}",agri_0_5634 agri_0_8599 agri_0_980
+257,3,False,False,crop,"{""crop"": 3}",agri_0_5676 agri_0_6097 agri_0_6407
+258,3,False,False,crop,"{""crop"": 3}",agri_0_5784 agri_0_6776 agri_0_7489
+259,3,False,False,crop,"{""crop"": 3}",agri_0_5802 agri_0_6055 agri_0_8485
+260,3,False,False,crop,"{""crop"": 3}",agri_0_5822 agri_0_7997 agri_0_9144
+261,3,False,False,crop,"{""crop"": 3}",agri_0_583 agri_0_6120 agri_0_9831
+262,3,False,False,crop,"{""crop"": 3}",agri_0_601 agri_0_8881 agri_0_9584
+263,3,False,False,crop,"{""crop"": 3}",agri_0_6152 agri_0_8183 agri_0_9714
+264,3,False,False,crop,"{""crop"": 3}",agri_0_6270 agri_0_7391 agri_0_9843
+265,2,False,False,crop,"{""crop"": 2}",agri_0_6286 agri_0_8980
+266,3,True,False,crop,"{""weed"": 1, ""crop"": 2}",agri_0_6342 agri_0_9127 agri_0_9601
+267,3,False,False,crop,"{""crop"": 3}",agri_0_6346 agri_0_7034 agri_0_7629
+268,3,False,False,crop,"{""crop"": 3}",agri_0_6353 agri_0_8209 agri_0_9845
+269,3,False,False,crop,"{""crop"": 3}",agri_0_641 agri_0_6642 agri_0_8788
+270,3,False,False,crop,"{""crop"": 3}",agri_0_6412 agri_0_8315 agri_0_9312
+271,3,False,False,crop,"{""crop"": 3}",agri_0_6419 agri_0_8341 agri_0_8959
+272,2,False,False,crop,"{""crop"": 2}",agri_0_6449 agri_0_839
+273,3,False,False,crop,"{""crop"": 3}",agri_0_6461 agri_0_741 agri_0_9044
+274,3,False,False,crop,"{""crop"": 3}",agri_0_6518 agri_0_7788 agri_0_9297
+275,3,False,False,crop,"{""crop"": 3}",agri_0_6547 agri_0_9176 agri_0_9397
+276,3,False,False,crop,"{""crop"": 3}",agri_0_6707 agri_0_9712 agri_0_9899
+277,2,False,False,crop,"{""crop"": 2}",agri_0_6717 agri_0_8007
+278,3,False,False,crop,"{""crop"": 3}",agri_0_6907 agri_0_8157 agri_0_8574
+279,3,False,False,crop,"{""crop"": 3}",agri_0_6978 agri_0_8357 agri_0_8863
+280,3,False,False,crop,"{""crop"": 3}",agri_0_718 agri_0_7357 agri_0_8893
+281,2,False,False,crop,"{""crop"": 2}",agri_0_7294 agri_0_9398
+282,3,False,False,crop,"{""crop"": 3}",agri_0_7322 agri_0_830 agri_0_9776
+283,3,False,False,crop,"{""crop"": 3}",agri_0_7323 agri_0_7668 agri_0_7779
+284,3,False,False,crop,"{""crop"": 3}",agri_0_7888 agri_0_8195 agri_0_8246
+285,3,False,False,crop,"{""crop"": 3}",agri_0_8405 agri_0_8572 agri_0_9857
+286,3,False,False,crop,"{""crop"": 3}",agri_0_8482 agri_0_8493 agri_0_9489
+287,3,False,False,crop,"{""crop"": 3}",agri_0_8700 agri_0_9126 agri_0_9253
+288,3,False,False,crop,"{""crop"": 3}",agri_0_8780 agri_0_9207 agri_0_9933

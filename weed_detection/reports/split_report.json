@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\Hrishikesh Khanna\\Downloads\\weed dataset",
+  "output": "C:\\Users\\Hrishikesh Khanna\\Desktop\\Smart_irrigation_system_new-main\\weed_detection\\dataset",
+  "conflict_policy": "majority",
+  "ratios": {
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15
+  },
+  "seed": 42,
+  "duplicate_threshold": 56,
+  "images_total": 1300,
+  "images_kept": 1264,
+  "images_excluded": 36,
+  "excluded_by_reason": {
+    "disagrees with majority": 34,
+    "tie": 2
+  },
+  "splits": {
+    "train": {
+      "images": 884,
+      "duplicate_groups": 204,
+      "images_by_main_class": {
+        "weed": 453,
+        "crop": 431
+      },
+      "boxes_by_class": {
+        "weed": 592,
+        "crop": 809
+      }
+    },
+    "val": {
+      "images": 190,
+      "duplicate_groups": 43,
+      "images_by_main_class": {
+        "weed": 99,
+        "crop": 91
+      },
+      "boxes_by_class": {
+        "weed": 120,
+        "crop": 179
+      }
+    },
+    "test": {
+      "images": 190,
+      "duplicate_groups": 41,
+      "images_by_main_class": {
+        "weed": 98,
+        "crop": 92
+      },
+      "boxes_by_class": {
+        "weed": 125,
+        "crop": 200
+      }
+    }
+  },
+  "leakage_check": {
+    "groups_split_across_sets": 0,
+    "closest_cross_split_distance": 70,
+    "threshold": 56,
+    "passed": true
+  },
+  "original_dataset_unchanged": true
+}

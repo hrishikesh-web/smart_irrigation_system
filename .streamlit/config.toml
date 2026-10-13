@@ -1,0 +1,12 @@
+# Visual theme for the Smart Agriculture dashboard (presentation only).
+# Streamlit reads this automatically when you run `streamlit run dashboard.py` from the project root.
+# It makes built-in widgets (sliders, tables, inputs, uploader) match the dark forest-green design.
+# Delete this file to return to Streamlit's default colours; nothing else depends on it.
+
+[theme]
+base = "dark"
+primaryColor = "#7FCB6E"
+backgroundColor = "#141915"
+secondaryBackgroundColor = "#1D2A22"
+textColor = "#E6ECE5"
+font = "sans serif"

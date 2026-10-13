@@ -1,0 +1,43 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.streamlit/secrets.toml
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Python test and coverage outputs
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary and backup files
+backups/
+dashboard_backup.py
+dashboard_redesign.py
+
+# Local datasets and training outputs
+runs/
+wandb/
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local datasets and training outputs
+runs/
+wandb/
+
+# Temporary UI verification script
+verify_ui_redesign.py
+
+# YOLO training outputs
+weed_detection/runs/
+weed_detection/pretrained/
+training/yolov8n.pt
+weights/yolo26n.pt
+phase13_training/
+training/experimental/phase13/
+training/experimental/phase15_transformer/transformer_experimental.pt
