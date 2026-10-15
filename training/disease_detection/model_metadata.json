@@ -1,0 +1,57 @@
+{
+  "model_architecture": "YOLOv8n-cls",
+  "task": "classification",
+  "checkpoint_path": "/Users/aryanagrawal/ESA_PROJECT/training/disease_detection/weights/best.pt",
+  "checkpoint_size_mb": 2.83,
+  "classes": [
+    "Early Blight",
+    "Healthy",
+    "Late Blight",
+    "Septoria Leaf Spot"
+  ],
+  "num_classes": 4,
+  "device_used": "mps",
+  "hyperparameters": {
+    "epochs_requested": 15,
+    "patience": 5,
+    "batch_size": 32,
+    "image_size": 224,
+    "seed": 42,
+    "augmentations": {
+      "degrees": 10.0,
+      "fliplr": 0.5,
+      "flipud": 0.2
+    }
+  },
+  "training_duration_seconds": 58.1,
+  "val_metrics": {
+    "accuracy_top1": 0.9801,
+    "accuracy_top5": 1.0
+  },
+  "dataset": {
+    "name": "PlantVillage Tomato Leaf Disease Subset",
+    "source": "https://github.com/spMohanty/PlantVillage-Dataset",
+    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "split_counts": {
+      "train": {
+        "Healthy": 175,
+        "Early Blight": 175,
+        "Late Blight": 175,
+        "Septoria Leaf Spot": 175
+      },
+      "val": {
+        "Healthy": 37,
+        "Early Blight": 37,
+        "Late Blight": 37,
+        "Septoria Leaf Spot": 37
+      },
+      "test": {
+        "Healthy": 38,
+        "Early Blight": 38,
+        "Late Blight": 38,
+        "Septoria Leaf Spot": 38
+      }
+    }
+  },
+  "created_at": "2026-10-15T16:15:40Z"
+}

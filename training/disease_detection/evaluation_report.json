@@ -1,0 +1,287 @@
+{
+  "evaluation_timestamp": "2026-10-13T18:52:12Z",
+  "checkpoint": "/Users/aryanagrawal/ESA_PROJECT/training/disease_detection/weights/best.pt",
+  "test_split_path": "/Users/aryanagrawal/ESA_PROJECT/data/disease_dataset/split/test",
+  "total_test_samples": 152,
+  "classes": [
+    "Early Blight",
+    "Healthy",
+    "Late Blight",
+    "Septoria Leaf Spot"
+  ],
+  "metrics": {
+    "overall_accuracy": 0.9211,
+    "top2_accuracy": 0.9868,
+    "macro_precision": 0.9219,
+    "macro_recall": 0.9211,
+    "macro_f1_score": 0.9209
+  },
+  "per_class": {
+    "Early Blight": {
+      "class_id": 0,
+      "support": 38,
+      "tp": 34,
+      "fp": 6,
+      "fn": 4,
+      "tn": 108,
+      "precision": 0.85,
+      "recall": 0.8947,
+      "f1_score": 0.8718,
+      "avg_confidence": 0.9297
+    },
+    "Healthy": {
+      "class_id": 1,
+      "support": 38,
+      "tp": 38,
+      "fp": 0,
+      "fn": 0,
+      "tn": 114,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "avg_confidence": 0.9705
+    },
+    "Late Blight": {
+      "class_id": 2,
+      "support": 38,
+      "tp": 32,
+      "fp": 3,
+      "fn": 6,
+      "tn": 111,
+      "precision": 0.9143,
+      "recall": 0.8421,
+      "f1_score": 0.8767,
+      "avg_confidence": 0.8809
+    },
+    "Septoria Leaf Spot": {
+      "class_id": 3,
+      "support": 38,
+      "tp": 36,
+      "fp": 3,
+      "fn": 2,
+      "tn": 111,
+      "precision": 0.9231,
+      "recall": 0.9474,
+      "f1_score": 0.9351,
+      "avg_confidence": 0.9214
+    }
+  },
+  "confusion_matrix": {
+    "classes": [
+      "Early Blight",
+      "Healthy",
+      "Late Blight",
+      "Septoria Leaf Spot"
+    ],
+    "matrix": [
+      [
+        34,
+        0,
+        2,
+        2
+      ],
+      [
+        0,
+        38,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        32,
+        1
+      ],
+      [
+        1,
+        0,
+        1,
+        36
+      ]
+    ]
+  },
+  "misclassifications": {
+    "total_count": 12,
+    "summary": {
+      "Early Blight -> Late Blight": 2,
+      "Early Blight -> Septoria Leaf Spot": 2,
+      "Late Blight -> Early Blight": 5,
+      "Late Blight -> Septoria Leaf Spot": 1,
+      "Septoria Leaf Spot -> Early Blight": 1,
+      "Septoria Leaf Spot -> Late Blight": 1
+    },
+    "details": [
+      {
+        "image": "01861c93-ea8b-4820-aaa8-cc6003b3e75b___RS_Erly.B 7855.JPG",
+        "true_class": "Early Blight",
+        "pred_class": "Late Blight",
+        "confidence": 0.9757,
+        "top2_classes": [
+          "Late Blight",
+          "Early Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "16d79bd2-5c70-4e6b-a52a-0c578b501d04___RS_Erly.B 6446.JPG",
+        "true_class": "Early Blight",
+        "pred_class": "Septoria Leaf Spot",
+        "confidence": 0.9217,
+        "top2_classes": [
+          "Septoria Leaf Spot",
+          "Early Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "03b7a13c-f5c0-44c4-beed-443841670e9a___RS_Erly.B 8225.JPG",
+        "true_class": "Early Blight",
+        "pred_class": "Septoria Leaf Spot",
+        "confidence": 0.6858,
+        "top2_classes": [
+          "Septoria Leaf Spot",
+          "Early Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "0621aab4-b9fd-4012-b0a6-ba72e63cd87d___RS_Erly.B 8220.JPG",
+        "true_class": "Early Blight",
+        "pred_class": "Late Blight",
+        "confidence": 0.5798,
+        "top2_classes": [
+          "Late Blight",
+          "Early Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "0c9ff8e1-b610-43e3-b914-5e9576dd8083___GHLB2 Leaf 107.1.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Early Blight",
+        "confidence": 0.9019,
+        "top2_classes": [
+          "Early Blight",
+          "Late Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "0fca6d09-1931-4767-a195-1dd2b7cd10b7___GHLB Leaf 8 Day 12.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Early Blight",
+        "confidence": 0.7774,
+        "top2_classes": [
+          "Early Blight",
+          "Septoria Leaf Spot"
+        ],
+        "correct": false
+      },
+      {
+        "image": "15581dd8-f562-4301-856c-30be9302c470___GHLB2 Leaf 70.1.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Septoria Leaf Spot",
+        "confidence": 0.5469,
+        "top2_classes": [
+          "Septoria Leaf Spot",
+          "Late Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "0524e8c4-56d9-41e2-b22d-33f22950ff93___RS_Late.B 5320.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Early Blight",
+        "confidence": 0.9343,
+        "top2_classes": [
+          "Early Blight",
+          "Late Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "06f7c4e6-abd5-4399-9083-ed241a9c4bab___RS_Late.B 5407.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Early Blight",
+        "confidence": 0.5528,
+        "top2_classes": [
+          "Early Blight",
+          "Late Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "12d62ed2-a145-4400-824d-3e4d5f64418a___RS_Late.B 6586.JPG",
+        "true_class": "Late Blight",
+        "pred_class": "Early Blight",
+        "confidence": 0.8747,
+        "top2_classes": [
+          "Early Blight",
+          "Late Blight"
+        ],
+        "correct": false
+      },
+      {
+        "image": "20c3bfbf-a2c7-425c-9ad7-bd1ec8f3b181___JR_Sept.L.S 2656.JPG",
+        "true_class": "Septoria Leaf Spot",
+        "pred_class": "Early Blight",
+        "confidence": 0.5839,
+        "top2_classes": [
+          "Early Blight",
+          "Septoria Leaf Spot"
+        ],
+        "correct": false
+      },
+      {
+        "image": "0c8fd2f4-9c26-4e6d-90b5-fae10602579c___Matt.S_CG 1072.JPG",
+        "true_class": "Septoria Leaf Spot",
+        "pred_class": "Late Blight",
+        "confidence": 0.6157,
+        "top2_classes": [
+          "Late Blight",
+          "Early Blight"
+        ],
+        "correct": false
+      }
+    ]
+  },
+  "confidence_threshold_analysis": {
+    "threshold_50%": {
+      "threshold": 0.5,
+      "accepted_count": 150,
+      "uncertain_count": 2,
+      "accuracy_on_accepted": 0.92
+    },
+    "threshold_60%": {
+      "threshold": 0.6,
+      "accepted_count": 144,
+      "uncertain_count": 8,
+      "accuracy_on_accepted": 0.9444
+    },
+    "threshold_70%": {
+      "threshold": 0.7,
+      "accepted_count": 138,
+      "uncertain_count": 14,
+      "accuracy_on_accepted": 0.9565
+    },
+    "threshold_80%": {
+      "threshold": 0.8,
+      "accepted_count": 128,
+      "uncertain_count": 24,
+      "accuracy_on_accepted": 0.9609
+    },
+    "threshold_90%": {
+      "threshold": 0.9,
+      "accepted_count": 116,
+      "uncertain_count": 36,
+      "accuracy_on_accepted": 0.9655
+    }
+  },
+  "limitations": [
+    "Trained and evaluated on PlantVillage controlled-background images (single leaf on neutral background).",
+    "Does NOT guarantee identical accuracy in complex real-world field conditions (cluttered soil/foliage background, variable sunlight, shadows, co-infections).",
+    "Model is constrained to 4 classes (Healthy, Early Blight, Late Blight, Septoria Leaf Spot) and will produce erroneous predictions on other crops or untreated pathogens.",
+    "Softmax output is an intra-class score distribution, not a guaranteed clinical posterior probability of infection.",
+    "All predictions are experimental decision-support flags; chemical and crop management decisions must involve local agronomic inspection."
+  ]
+}

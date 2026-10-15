@@ -1,0 +1,21 @@
+{
+  "model_type": "TCN",
+  "features": [
+    "soil_moisture",
+    "weather_temp",
+    "weather_humidity",
+    "weather_rain",
+    "hour",
+    "month"
+  ],
+  "feature_count": 6,
+  "parameters": 16897,
+  "epochs": 10,
+  "best_val_mse": 31.6631461682291,
+  "test_mae": 5.632226467132568,
+  "test_rmse": 7.381289005279541,
+  "test_r2": 0.8721776604652405,
+  "persistence_mae": 0.4124385178278106,
+  "persistence_rmse": 0.7640675626749585,
+  "checkpoint": "training/models/hardware_tcn.pt"
+}

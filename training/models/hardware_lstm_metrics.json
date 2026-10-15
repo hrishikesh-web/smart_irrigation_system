@@ -1,0 +1,21 @@
+{
+  "model_type": "LSTM",
+  "features": [
+    "soil_moisture",
+    "weather_temp",
+    "weather_humidity",
+    "weather_rain",
+    "hour",
+    "month"
+  ],
+  "feature_count": 6,
+  "parameters": 5665,
+  "epochs": 10,
+  "best_val_mse": 11.888266703315901,
+  "test_mae": 4.460626602172852,
+  "test_rmse": 6.254360198974609,
+  "test_r2": 0.9082284569740295,
+  "persistence_mae": 0.4124385178278106,
+  "persistence_rmse": 0.7640675626749585,
+  "checkpoint": "training/models/hardware_lstm.pt"
+}

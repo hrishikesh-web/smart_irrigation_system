@@ -9,6 +9,7 @@ import json
 import threading
 import time
 import sys
+import os
 from pathlib import Path
 
 from datetime import datetime, timezone
@@ -19,22 +20,44 @@ TRAINING_DIR = PROJECT_ROOT / "training"
 if str(TRAINING_DIR) not in sys.path:
     sys.path.insert(0, str(TRAINING_DIR))
 
+# Database module: project-root database.py (original layout), or training/database.py
+# (layout used in the friend's project). Failure is reported instead of crashing.
 try:
     import database
-except ImportError:
-    database = None
+    DATABASE_IMPORT_ERROR = None
+except Exception as _database_import_exc:
+    try:
+        from training import database
+        DATABASE_IMPORT_ERROR = None
+    except Exception as _database_import_exc2:
+        database = None
+        DATABASE_IMPORT_ERROR = (
+            f"Could not import database.py: {_database_import_exc}; "
+            f"training/database.py fallback: {_database_import_exc2}"
+        )
 
 try:
-    from inference import (
-        predict as run_model_inference,
-        audit_feature_readiness,
-        get_model_comparison_rows,
-        get_model_trustworthiness,
-        get_model_details,
-        get_metrics,
-    )
+    try:
+        from inference import (
+            predict as run_model_inference,
+            audit_feature_readiness,
+            get_model_comparison_rows,
+            get_model_trustworthiness,
+            get_model_details,
+            get_metrics,
+        )
+    except ImportError:
+        from training.inference import (
+            predict as run_model_inference,
+            audit_feature_readiness,
+            get_model_comparison_rows,
+            get_model_trustworthiness,
+            get_model_details,
+            get_metrics,
+        )
 except ImportError:
     run_model_inference = None
+    audit_feature_readiness = None
     get_model_comparison_rows = None
     get_model_trustworthiness = lambda m, s=None: {
         "category": "Experimental",
@@ -52,6 +75,38 @@ except ImportError:
     get_model_details = None
     get_metrics = None
 
+# Compatibility fallback for older/missing inference modules.
+# This reports unavailable readiness instead of crashing the entire dashboard.
+if audit_feature_readiness is None:
+    def audit_feature_readiness(sensor_data=None, weather_data=None, model_name=None):
+        sensor_data = sensor_data or {}
+        feature_rows = []
+        for label, key in (
+            ("Soil probe 1", "soil1_raw"),
+            ("Soil probe 2", "soil2_raw"),
+            ("Air temperature", "temperature"),
+            ("Air humidity", "humidity"),
+            ("Rain status", "rain"),
+        ):
+            value = sensor_data.get(key)
+            feature_rows.append({
+                "Feature": label,
+                "Units": "raw / sensor-specific",
+                "Live Value": value if value is not None else "N/A",
+                "Source": "ESP32 telemetry",
+                "Provenance": "Live reading" if value is not None else "Unavailable",
+                "Ready": value is not None,
+                "Limitation / Details": "Compatibility fallback; full 11-feature inference audit is unavailable.",
+            })
+        ready_count = sum(bool(row["Ready"]) for row in feature_rows)
+        return {
+            "ready_count": ready_count,
+            "total_features": len(feature_rows),
+            "is_live_ready": False,
+            "blockers": ["The original 11-feature inference module is missing or incomplete."],
+            "feature_rows": feature_rows,
+        }
+
 # Weed detection (new, independent pipeline in weed_detection/).
 # Ultralytics is only imported when the weed model is first used, and a failure here
 # only affects the Weed Detection page.
@@ -63,6 +118,22 @@ try:
 except Exception as exc:
     weed_detector = None
     WEED_DETECTOR_IMPORT_ERROR = str(exc)
+
+# Crop disease detection (independent pipeline in disease_detection/).
+try:
+    from disease_detection import detector as disease_detector
+    DISEASE_DETECTOR_IMPORT_ERROR = None
+except Exception as exc:
+    disease_detector = None
+    DISEASE_DETECTOR_IMPORT_ERROR = str(exc)
+
+# Four-feature "future dryness" Random Forest helper (src/dashboard_dryness_prediction.py).
+try:
+    from src.dashboard_dryness_prediction import predict_future_dryness
+    DRYNESS_IMPORT_ERROR = None
+except Exception as exc:
+    predict_future_dryness = None
+    DRYNESS_IMPORT_ERROR = str(exc)
 
 
 # ============================================================
@@ -169,19 +240,32 @@ hr { border-color: var(--line) !important; opacity: .8; }
 
 /* ---------- sidebar & navigation ---------- */
 [data-testid="stSidebar"] { background: var(--ground-2); border-right: 1px solid var(--line); }
-[data-testid="stSidebar"] h1 { font-size: 1.35rem; font-weight: 650; }
-.st-key-navigation_radio [role="radiogroup"] { gap: 2px; }
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+  font-size: 1.35rem; font-weight: 700; color: #FFFFFF;
+}
+[data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
+  color: #D6E2D8; font-weight: 500;
+}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {
+  color: #B5C4B8; font-weight: 500;
+}
+.st-key-navigation_radio [role="radiogroup"] { gap: 3px; }
 .st-key-navigation_radio [role="radiogroup"] > label {
-  width: 100%; margin: 0; padding: .5rem .65rem; border-radius: 8px;
+  width: 100%; margin: 0; padding: .55rem .75rem; border-radius: 8px;
   border-left: 3px solid transparent;
 }
 .st-key-navigation_radio [role="radiogroup"] > label > div:first-child { display: none; }
-.st-key-navigation_radio [role="radiogroup"] > label:hover { background: rgba(127,203,110,.06); }
+.st-key-navigation_radio [role="radiogroup"] > label:hover { background: rgba(127,203,110,.08); }
+.st-key-navigation_radio [role="radiogroup"] > label:hover p { color: #FFFFFF; }
 .st-key-navigation_radio [role="radiogroup"] > label:has(input:checked) {
-  background: rgba(127,203,110,.13); border-left-color: var(--leaf);
+  background: rgba(127,203,110,.16); border-left-color: var(--leaf);
 }
-.st-key-navigation_radio [role="radiogroup"] > label:has(input:checked) p { color: var(--text); font-weight: 600; }
-.st-key-navigation_radio [role="radiogroup"] > label p { font-size: .95rem; }
+.st-key-navigation_radio [role="radiogroup"] > label p {
+  font-size: .98rem; font-weight: 600; color: #D6E2D8; letter-spacing: 0.01em;
+}
+.st-key-navigation_radio [role="radiogroup"] > label:has(input:checked) p {
+  color: #FFFFFF; font-weight: 700;
+}
 
 /* ---------- readable on dark: re-tint the light inline styles used by existing pages ---------- */
 [style*="background-color: #fafafa"], [style*="background-color: #f9f9f9"], [style*="background-color: #f8f9fa"] {
@@ -346,6 +430,12 @@ DEFAULT_STATE = {
     "selected_model": ACTIVE_MODEL_NAME,
     "weed_result": None,
     "weed_result_key": None,
+    "disease_result": None,
+    "disease_result_key": None,
+    "disease_detected_class": None,
+    "disease_confidence": None,
+    "last_disease_detection_time": None,
+    "disease_history": [],
 }
 
 for key, value in DEFAULT_STATE.items():
@@ -360,7 +450,12 @@ st.session_state["selected_model"] = ACTIVE_MODEL_NAME
 # ============================================================
 
 # ESP32 USB serial connection. Close Arduino Serial Monitor before running Streamlit.
-ESP32_SERIAL_PORT = "/dev/cu.usbserial-0001"
+# Windows: check Device Manager > Ports (COM & LPT) for the ESP32 port, e.g. COM3 or COM5.
+# Override without editing code:  $env:ESP32_SERIAL_PORT = "COM5"  before  streamlit run dashboard.py
+ESP32_SERIAL_PORT = os.environ.get(
+    "ESP32_SERIAL_PORT",
+    "COM3" if os.name == "nt" else "/dev/cu.usbserial-0001",
+)
 ESP32_BAUD_RATE = 115200
 ESP32_STALE_AFTER_SECONDS = 25
 
@@ -600,7 +695,80 @@ def get_esp32_reader():
 
 
 def get_sensor_data():
-    """Read live sensor values from the ESP32 USB serial JSON stream."""
+    """Read live sensor values from the ESP32 USB serial JSON stream or background collector."""
+    # Check if standalone background collector is active
+    try:
+        import collector
+        collector_alive, _ = collector.is_collector_running()
+    except Exception:
+        collector_alive = False
+
+    if collector_alive and database is not None and hasattr(database, "get_latest_reading"):
+        latest = database.get_latest_reading()
+        if latest is not None:
+            calibrations = database.get_all_calibrations()
+            cal1 = calibrations.get("probe1", {})
+            cal2 = calibrations.get("probe2", {})
+            rec_at = latest.get("recorded_at")
+            is_stale = (time.time() - rec_at > ESP32_STALE_AFTER_SECONDS) if rec_at else False
+            # Apply each probe's own calibration in collector mode too.
+            # These are relative moisture indices, not laboratory VWC percentages.
+            soil1_raw = latest.get("soil1_raw")
+            soil2_raw = latest.get("soil2_raw")
+            soil1_calibrated = None
+            soil2_calibrated = None
+            if cal1.get("calibrated") and soil1_raw is not None:
+                try:
+                    soil1_calibrated = database.calculate_calibrated_moisture(
+                        float(soil1_raw), cal1["dry_adc"], cal1["wet_adc"]
+                    )
+                except (TypeError, ValueError, KeyError):
+                    soil1_calibrated = None
+            if cal2.get("calibrated") and soil2_raw is not None:
+                try:
+                    soil2_calibrated = database.calculate_calibrated_moisture(
+                        float(soil2_raw), cal2["dry_adc"], cal2["wet_adc"]
+                    )
+                except (TypeError, ValueError, KeyError):
+                    soil2_calibrated = None
+            calibrated_values = [
+                value for value in (soil1_calibrated, soil2_calibrated)
+                if value is not None
+            ]
+            soil_moisture_calibrated = (
+                sum(calibrated_values) / len(calibrated_values)
+                if calibrated_values else None
+            )
+            raw_values = [
+                float(value) for value in (soil1_raw, soil2_raw)
+                if value is not None
+            ]
+            soil_raw_average = (
+                sum(raw_values) / len(raw_values) if raw_values else None
+            )
+            return {
+                "temperature": latest.get("temperature_c"),
+                "humidity": latest.get("humidity_pct"),
+                "soil_moisture": soil_raw_average,
+                "soil_moisture_calibrated": soil_moisture_calibrated,
+                "is_calibrated": soil_moisture_calibrated is not None,
+                "soil1_raw": soil1_raw,
+                "soil2_raw": soil2_raw,
+                "soil1_calibrated": soil1_calibrated,
+                "soil2_calibrated": soil2_calibrated,
+                "probe1_calibrated": cal1.get("calibrated", False),
+                "probe2_calibrated": cal2.get("calibrated", False),
+                "probe1_calibration": cal1,
+                "probe2_calibration": cal2,
+                "water_level": latest.get("water_level_raw"),
+                "rain": latest.get("rain_detected"),
+                "pump_status": None,  # no pump telemetry; actuation stays disabled
+                "sensor_error": "ESP32 data is stale." if is_stale else None,
+                "last_received_at": latest.get("timestamp"),
+                "data_source": "standalone_collector",
+                "is_stale": is_stale,
+            }
+
     reader = get_esp32_reader()
     raw, error = reader.get_data()
 
@@ -659,7 +827,7 @@ def get_sensor_data():
     soil_moisture_calibrated = sum(calibrated_vals) / len(calibrated_vals) if calibrated_vals else None
     is_calibrated = (soil_moisture_calibrated is not None)
 
-    rain_value = raw.get("rain_detected")
+    rain_value = raw.get("rain_detected", raw.get("rain"))
     if isinstance(rain_value, bool):
         rain = rain_value
     elif isinstance(rain_value, (int, float)):
@@ -676,8 +844,8 @@ def get_sensor_data():
         rain = None
 
     return {
-        "temperature": numeric_value(raw.get("temperature_c")),
-        "humidity": numeric_value(raw.get("humidity_pct")),
+        "temperature": numeric_value(raw.get("temperature_c", raw.get("temperature"))),
+        "humidity": numeric_value(raw.get("humidity_pct", raw.get("humidity"))),
         "soil_moisture": soil_average,
         "soil_moisture_calibrated": soil_moisture_calibrated,
         "is_calibrated": is_calibrated,
@@ -1052,6 +1220,68 @@ def run_weed_detection(image_file, confidence=0.25):
 
 
 # ============================================================
+# CROP DISEASE DETECTION
+# ============================================================
+
+@st.cache_resource(show_spinner="Loading crop disease detection model...", max_entries=1)
+def load_disease_model(model_path, modified_time):
+    """
+    Load the trained YOLOv8n crop disease classification model once and cache it.
+    modified_time is part of the cache key, so a retrained model is picked up automatically.
+    """
+    return disease_detector.load_model(Path(model_path))
+
+
+def run_disease_detection(image_file, confidence_threshold=0.60):
+    """
+    Run the trained tomato disease classifier on an uploaded image.
+    Never raises unhandled exceptions — returns a structured result dictionary.
+    """
+    result = {
+        "predicted_class": None,
+        "confidence": None,
+        "confidence_pct": None,
+        "confidence_margin": None,
+        "is_uncertain": False,
+        "uncertainty_reasons": [],
+        "top_predictions": [],
+        "advisory": None,
+        "supported_classes": [],
+        "model_version": None,
+        "disclaimer": None,
+        "error": None,
+    }
+
+    if disease_detector is None:
+        result["error"] = f"Disease detection module could not be loaded: {DISEASE_DETECTOR_IMPORT_ERROR}"
+        return result
+
+    status = disease_detector.model_status()
+    if not status["exists"]:
+        result["error"] = (
+            f"Trained disease detection model not found at {status['path']}. "
+            "Please train the model first with: python training/train_disease_detector.py"
+        )
+        return result
+
+    try:
+        model = load_disease_model(status["path"], status["modified"])
+        raw_bytes = image_file.getvalue() if hasattr(image_file, "getvalue") else image_file
+        pred_output = disease_detector.predict_disease(
+            model=model,
+            image_input=raw_bytes,
+            conf_threshold=confidence_threshold,
+        )
+        result.update(pred_output)
+    except disease_detector.DiseaseImageError as exc:
+        result["error"] = f"Image issue: {exc}"
+    except Exception as exc:
+        result["error"] = f"Disease detection failed: {exc}"
+
+    return result
+
+
+# ============================================================
 # RECOMMENDATION SYSTEM
 # ============================================================
 
@@ -1194,6 +1424,7 @@ page = st.sidebar.radio(
         "🏠 Overview",
         "💧 Irrigation",
         "🌿 Weed Detection",
+        "🍂 Crop Disease Detection",
         "🌦 Weather",
         "🧪 Recommendations",
         "🤖 AI Models",
@@ -1302,13 +1533,29 @@ with cal_expand:
     btn_col1, btn_col2 = st.columns(2)
     with btn_col1:
         if st.button("💾 Save", key=f"save_btn_{p_id}", use_container_width=True):
-            if database is not None:
-                ok, err = database.save_probe_calibration(p_id, input_dry, input_wet)
-                if ok:
-                    st.success(f"Saved calibration for {probe_choice}!")
-                    st.rerun()
-                else:
-                    st.error(f"Error: {err}")
+            if database is None:
+                st.error(
+                    "Calibration was not saved because the database module could not be imported. "
+                    + str(globals().get("DATABASE_IMPORT_ERROR", "Unknown database import error"))
+                )
+            else:
+                try:
+                    ok, err = database.save_probe_calibration(p_id, int(input_dry), int(input_wet))
+                    if ok:
+                        # Verify the write instead of reporting success blindly.
+                        saved_cal = database.get_probe_calibration(p_id)
+                        if saved_cal and saved_cal.get("calibrated"):
+                            st.success(
+                                f"Saved {probe_choice}: dry {saved_cal.get('dry_adc')} ADC, "
+                                f"wet {saved_cal.get('wet_adc')} ADC."
+                            )
+                            st.rerun()
+                        else:
+                            st.error("The save function returned success, but calibration could not be read back.")
+                    else:
+                        st.error(f"Calibration save failed: {err}")
+                except Exception as exc:
+                    st.error(f"Calibration save failed: {exc}")
     with btn_col2:
         if st.button("🗑 Reset", key=f"reset_btn_{p_id}", use_container_width=True):
             if database is not None:
@@ -1340,11 +1587,13 @@ if st.sidebar.button(
 
 if sensor_data.get("sensor_error"):
     st.sidebar.warning(f"ESP32: {sensor_data['sensor_error']}")
-else:
+elif sensor_data.get("last_received_at") is not None:
     st.sidebar.success(
         "ESP32 connected • Last reading "
         f"{sensor_data.get('last_received_at', 'N/A')}"
     )
+else:
+    st.sidebar.warning("ESP32: Waiting for the first valid reading.")
 
 
 # Run irrigation prediction using selected model and current data (safeguarding live predictions)
@@ -1413,6 +1662,12 @@ if page == "🏠 Overview":
         ov_chips.append(ui_chip("Weed model file found", "ok"))
     else:
         ov_chips.append(ui_chip("Weed model not trained", "warn"))
+    if disease_detector is None:
+        ov_chips.append(ui_chip("Disease model unavailable", "bad", DISEASE_DETECTOR_IMPORT_ERROR))
+    elif disease_detector.model_status()["exists"]:
+        ov_chips.append(ui_chip("Disease model file found", "ok"))
+    else:
+        ov_chips.append(ui_chip("Disease model not trained", "warn"))
 
     ui_hero(
         "Field overview",
@@ -1936,10 +2191,27 @@ elif page == "💧 Irrigation":
 
     with col_ready:
         st.markdown("##### 🔌 Current Input Readiness")
-        st.markdown(f"- **Readiness State:** `{trust_info['input_readiness']}`")
-        st.markdown(f"- **Expected Pipeline Inputs:** {trust_info['input_requirements']}")
-        audit_rf = audit_feature_readiness(sensor_data=sensor_data, weather_data=weather_data, model_name=model_name)
-        st.markdown(f"- **Observed Inputs Ready:** `{audit_rf['ready_count']} / {audit_rf['total_features']}`")
+        # Calculate readiness first, then use this single result for all status UI.
+        audit_rf = audit_feature_readiness(
+            sensor_data=sensor_data,
+            weather_data=weather_data,
+            model_name=model_name,
+        )
+
+        readiness_label = (
+            "Ready for Live Prediction"
+            if audit_rf["is_live_ready"]
+            else "Blocked — Live Prediction Withheld"
+        )
+        st.markdown(f"- **Readiness State:** `{readiness_label}`")
+        st.markdown(
+            f"- **Expected Pipeline Inputs:** {trust_info['input_requirements']}"
+        )
+        st.markdown(
+            f"- **Observed Inputs Ready:** "
+            f"`{audit_rf['ready_count']} / {audit_rf['total_features']}`"
+        )
+
         if audit_rf["is_live_ready"]:
             st.success("✅ Complete 11-feature set ready for live prediction (Advisory Only).")
         else:
@@ -1950,6 +2222,113 @@ elif page == "💧 Irrigation":
                 ]
                 st.dataframe(audit_df, use_container_width=True, hide_index=True)
                 st.caption("Training medians are not silently substituted for unobserved sensors in live inference.")
+
+    # ------------------------------------------------------------
+    # Four-feature Random Forest — manual prediction UI
+    # ------------------------------------------------------------
+    st.divider()
+    st.header("🌱 Four-Feature Random Forest — 30-Minute Forecast", anchor=False)
+    st.caption(
+        "This is a separate model from the 11-feature model above. "
+        "It predicts whether future soil moisture will be at or below the "
+        "training-set 20th-percentile threshold. Inputs must use training-data units."
+    )
+    st.warning(
+        "Manual/test inputs only. ESP32 ADC readings, calibrated relative percentages, "
+        "air temperature, and the rain sensor's Boolean output are not automatically "
+        "converted into the training dataset's units. This prediction does not control the pump."
+    )
+
+    if predict_future_dryness is None:
+        st.error(
+            "The prediction helper could not be imported "
+            f"(src/dashboard_dryness_prediction.py): {DRYNESS_IMPORT_ERROR}"
+        )
+    else:
+        with st.form("four_feature_random_forest_form"):
+            rf_col1, rf_col2 = st.columns(2)
+            with rf_col1:
+                rf_moisture_1 = st.number_input(
+                    "Soil moisture 1 (training units)",
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=0.273,
+                    step=0.001,
+                    format="%.3f",
+                    help="Training data values are approximately 0.142–0.339.",
+                )
+                rf_moisture_2 = st.number_input(
+                    "Soil moisture 2 (training units)",
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=0.194,
+                    step=0.001,
+                    format="%.3f",
+                    help="Training data values are approximately 0.119–0.286.",
+                )
+            with rf_col2:
+                rf_soil_temperature = st.number_input(
+                    "Soil temperature (°C)",
+                    min_value=-20.0,
+                    max_value=60.0,
+                    value=20.6,
+                    step=0.1,
+                )
+                rf_rainfall = st.number_input(
+                    "Rainfall (mm)",
+                    min_value=0.0,
+                    max_value=1000.0,
+                    value=0.0,
+                    step=0.1,
+                    help="Training data rainfall is an amount in mm, not a rain/no-rain Boolean.",
+                )
+
+            rf_submitted = st.form_submit_button(
+                "Predict Future Soil Moisture",
+                type="primary",
+                use_container_width=True,
+            )
+
+        if rf_submitted:
+            rf_result = predict_future_dryness(
+                soil_moisture_1=rf_moisture_1,
+                soil_moisture_2=rf_moisture_2,
+                soil_temperature=rf_soil_temperature,
+                rainfall=rf_rainfall,
+            )
+            if not rf_result.get("available"):
+                st.error(rf_result.get("message", "Prediction unavailable."))
+            else:
+                rf_metric1, rf_metric2, rf_metric3 = st.columns(3)
+                rf_metric1.metric(
+                    "Low-Moisture Probability",
+                    f"{rf_result['probability']:.1%}",
+                )
+                rf_metric2.metric(
+                    "Forecast Horizon",
+                    f"{rf_result['forecast_minutes']} minutes",
+                )
+                rf_metric3.metric(
+                    "Training Threshold",
+                    f"{rf_result['threshold']:.3f}",
+                )
+
+                if rf_result["prediction"] == 1:
+                    st.warning(
+                        "Low moisture predicted in approximately "
+                        f"{rf_result['forecast_minutes']} minutes."
+                    )
+                else:
+                    st.success(
+                        "Low moisture not predicted in approximately "
+                        f"{rf_result['forecast_minutes']} minutes."
+                    )
+                st.caption(
+                    "Experimental model output. Probability is the model's estimated "
+                    "probability for the low-moisture class, not a guarantee of outcome. "
+                    "In the training script's own test, a simple rule (current soil moisture 1 "
+                    "at or below the threshold) was as accurate as this model."
+                )
 
     st.divider()
 
@@ -2358,6 +2737,288 @@ elif page == "🌿 Weed Detection":
 
 
 # ============================================================
+# CROP DISEASE DETECTION
+# ============================================================
+
+elif page == "🍂 Crop Disease Detection":
+
+    # Model status header chips
+    disease_chips = []
+    disease_model_status = None
+    if disease_detector is None:
+        disease_chips.append(ui_chip("Detection module unavailable", "bad", DISEASE_DETECTOR_IMPORT_ERROR))
+    else:
+        disease_model_status = disease_detector.model_status()
+        if disease_model_status["exists"]:
+            disease_chips.append(ui_chip(f"Model file found ({disease_model_status['size_mb']} MB)", "ok"))
+            if disease_model_status.get("val_accuracy"):
+                disease_chips.append(ui_chip(f"Val Acc: {disease_model_status['val_accuracy']*100:.1f}%", "ok"))
+        else:
+            disease_chips.append(ui_chip("Trained model not found", "bad"))
+    disease_chips.append(ui_chip("Crop: Tomato (Solanum lycopersicum)", "water"))
+    disease_chips.append(ui_chip("Classes: 4 diagnostic conditions", "idle"))
+    disease_chips.append(ui_chip("Experimental — Advisory Only", "warn"))
+
+    ui_hero(
+        "Crop disease detection",
+        "Upload a tomato leaf photo to identify early-stage foliage pathology. "
+        "Evaluates Healthy foliage against Early Blight, Late Blight, and Septoria Leaf Spot with uncertainty safeguards.",
+        chips=disease_chips,
+    )
+
+    if disease_detector is None:
+        st.error(
+            "Disease detection module could not be loaded: "
+            f"{DISEASE_DETECTOR_IMPORT_ERROR}"
+        )
+    elif not disease_model_status["exists"]:
+        st.error(
+            f"Trained disease classification model not found at {disease_model_status['path']}. "
+            "Please train the model first by running: python training/train_disease_detector.py"
+        )
+
+    # Controls container
+    with st.container(border=True):
+        src_col, set_col = st.columns([3, 2], gap="large")
+
+    with set_col:
+        ui_panel_heading(
+            "Diagnostic settings",
+            "Adjust confidence threshold and examine model specifications.",
+        )
+        disease_conf = st.slider(
+            "Reliability threshold",
+            min_value=0.50,
+            max_value=0.95,
+            value=0.60,
+            step=0.05,
+            key="disease_conf_threshold",
+            help=(
+                "Predictions below this confidence are flagged as uncertain / inconclusive. "
+                "0.60 is recommended for single-leaf computer vision."
+            ),
+        )
+
+        # Model facts read from the disease detector itself (nothing hardcoded)
+        if disease_model_status and disease_model_status.get("exists"):
+            spec_lines = [
+                f"<b>Model file:</b> {ui_escape(str(disease_model_status.get('path')))}",
+                f"<b>Size:</b> {disease_model_status.get('size_mb')} MB",
+            ]
+            if disease_model_status.get("val_accuracy") is not None:
+                spec_lines.append(
+                    f"<b>Validation accuracy (from model metadata):</b> "
+                    f"{disease_model_status['val_accuracy'] * 100:.1f}%"
+                )
+            _dis_report = PROJECT_ROOT / "training" / "disease_detection" / "evaluation_report.json"
+            if _dis_report.is_file():
+                try:
+                    _dis_eval = json.loads(_dis_report.read_text(encoding="utf-8"))
+                    _dis_m = _dis_eval.get("metrics", {})
+                    if _dis_m.get("overall_accuracy") is not None:
+                        spec_lines.append(
+                            f"<b>Held-out test accuracy (evaluation report):</b> "
+                            f"{_dis_m['overall_accuracy'] * 100:.1f}% "
+                            f"(top-2 {_dis_m.get('top2_accuracy', float('nan')) * 100:.1f}%, "
+                            f"{_dis_eval.get('total_test_samples', '?')} test images)"
+                        )
+                except Exception:
+                    pass
+            st.markdown(
+                "<div class='ui-note'>" + "<br/>".join(spec_lines) + "</div>",
+                unsafe_allow_html=True,
+            )
+
+    with src_col:
+        ui_panel_heading(
+            "Leaf photograph",
+            "Upload a JPG, JPEG, or PNG photograph of a tomato leaf.",
+        )
+        disease_input_method = st.radio(
+            "Image Source",
+            [
+                "Upload from device",
+                "Take a photo",
+            ],
+            horizontal=True,
+            key="disease_input_source",
+        )
+
+        uploaded_disease_file = None
+        if disease_input_method == "Upload from device":
+            uploaded_disease_file = st.file_uploader(
+                "Choose a leaf image (JPG, JPEG, or PNG)",
+                type=["jpg", "jpeg", "png"],
+                key="disease_file_uploader",
+            )
+        else:
+            uploaded_disease_file = st.camera_input(
+                "Take a tomato leaf photo",
+                key="disease_camera_input",
+            )
+
+    st.caption(
+        "Scope: classifies one tomato leaf per photo into the classes the model was trained on. "
+        "Accuracy on clean, controlled-background photos does not prove the same performance in the field "
+        "(sun glare, shadows, soil, several diseases at once). Results are decision support, not a diagnosis."
+    )
+
+    if uploaded_disease_file is None:
+        with set_col:
+            st.caption("Add an image on the left to enable disease classification.")
+        ui_empty(
+            "No leaf image selected",
+            "Upload a tomato foliage photo or take one, then select Analyze Leaf. "
+            "Detailed diagnostic classification, confidence distribution, and agronomic guidance will appear here.",
+        )
+    else:
+        current_key = (uploaded_disease_file.name, uploaded_disease_file.size)
+
+        with set_col:
+            analyze_clicked = st.button(
+                "🔬 Analyze Crop Foliage",
+                use_container_width=True,
+                type="primary",
+                key="btn_analyze_disease",
+            )
+
+        if analyze_clicked:
+            with st.spinner("Analyzing foliage pathology with YOLOv8..."):
+                d_result = run_disease_detection(
+                    uploaded_disease_file,
+                    confidence_threshold=disease_conf,
+                )
+
+            st.session_state.disease_result = d_result
+            st.session_state.disease_result_key = current_key
+            st.session_state.disease_detected_class = d_result.get("predicted_class")
+            st.session_state.disease_confidence = d_result.get("confidence_pct")
+            st.session_state.last_disease_detection_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Append to session history (in-memory only, does not alter SQLite DB)
+            if not d_result.get("error") and d_result.get("confidence_pct") is not None:
+                st.session_state.disease_history.insert(0, {
+                    "timestamp": st.session_state.last_disease_detection_time,
+                    "filename": uploaded_disease_file.name,
+                    "condition": d_result.get("predicted_class"),
+                    "confidence": f"{d_result['confidence_pct']:.1f}%",
+                    "status": "Uncertain / Scout" if d_result.get("is_uncertain") else "Above threshold",
+                })
+
+        d_result = st.session_state.disease_result
+
+        if d_result is None or st.session_state.disease_result_key != current_key:
+            prev_col, _prev_space = st.columns([3, 2])
+            with prev_col.container(border=True):
+                ui_panel_heading("Preview", "Select Analyze Crop Foliage to inspect this leaf.")
+                st.image(
+                    uploaded_disease_file,
+                    caption="Uploaded leaf photo — ready for pathology analysis",
+                    use_container_width=True,
+                )
+        elif d_result["error"]:
+            st.error(d_result["error"])
+        else:
+            # 1. Main Status Alert Banner
+            pred_class = d_result.get("predicted_class")
+            conf_pct = d_result.get("confidence_pct")
+            is_unc = bool(d_result.get("is_uncertain"))
+            if pred_class is None or conf_pct is None:
+                st.error(
+                    "The disease detector returned an unexpected result format "
+                    "(missing predicted class or confidence). Check disease_detection/detector.py."
+                )
+                st.stop()
+
+            if is_unc:
+                reasons_text = " • ".join(d_result.get("uncertainty_reasons") or []) or "low confidence"
+                st.warning(
+                    f"⚠️ **Inconclusive / Uncertain Assessment:** Preliminary match is **{pred_class}** ({conf_pct:.1f}%), "
+                    f"but uncertainty guardrails were triggered: {reasons_text}. Physical in-field scouting is strongly recommended."
+                )
+            elif pred_class == "Healthy":
+                st.success(
+                    f"✅ **Healthy Foliage Confirmed:** The specimen displays normal morphology ({conf_pct:.1f}% confidence) "
+                    "with no significant markers of Early Blight, Late Blight, or Septoria Leaf Spot."
+                )
+            else:
+                st.error(
+                    f"🚨 **Pathology Alert — {pred_class} Detected:** The specimen exhibits symptoms consistent with **{pred_class}** "
+                    f"({conf_pct:.1f}% confidence). Review cultural management advisory below."
+                )
+
+            # 2. Metric Row
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("Predicted Condition", pred_class)
+            m2.metric("Primary Confidence", f"{conf_pct:.1f} %")
+            margin_pct = (d_result.get("confidence_margin", 0.0) or 0.0) * 100
+            m3.metric("Candidate Margin", f"{margin_pct:.1f} %")
+            m4.metric("Threshold check", "Below / uncertain" if is_unc else f"Above {disease_conf:.2f}")
+
+            # 3. Visuals and Probability Breakdown
+            v_col, p_col = st.columns([1, 1], gap="large")
+
+            with v_col.container(border=True):
+                ui_panel_heading("Analyzed specimen", f"Filename: {uploaded_disease_file.name}")
+                st.image(
+                    uploaded_disease_file,
+                    caption=f"Predicted: {pred_class} ({conf_pct:.1f}%)",
+                    use_container_width=True,
+                )
+
+            with p_col.container(border=True):
+                ui_panel_heading("Class probability distribution", "Softmax outputs across all 4 supported classes.")
+                for cand in d_result.get("top_predictions", []):
+                    c_name = cand.get("class_name", "?")
+                    c_pct = float(cand.get("percentage", 0.0))
+                    is_top = (c_name == pred_class)
+                    bar_label = f"**{c_name}** — {c_pct:.1f}%" if is_top else f"{c_name} — {c_pct:.1f}%"
+                    st.write(bar_label)
+                    st.progress(min(max(float(cand.get("confidence", 0.0)), 0.0), 1.0))
+
+            # 4. Agronomic Advisory Card
+            adv = d_result.get("advisory") or {}
+            with st.container(border=True):
+                ui_panel_heading(f"Agronomic advisory — {pred_class}", adv.get("status", "Guidance"))
+                if adv.get("pathogen"):
+                    st.write(f"🔬 **Pathogen Entity:** *{adv['pathogen']}*")
+                st.write(f"📝 **Symptom Profile:** {adv.get('description', 'N/A')}")
+
+                st.markdown("##### 🛡️ Cultural Sanitation & Preventative Measures")
+                for measure in adv.get("cultural_measures", []):
+                    st.markdown(f"- {measure}")
+
+                st.caption(f"⏱️ **Monitoring Interval:** {adv.get('monitoring', 'Standard routine scouting.')}")
+
+            # 5. Non-prescriptive regulatory disclaimer
+            if d_result.get("disclaimer"):
+                st.info(f"ℹ️ {d_result.get('disclaimer')}")
+
+            # 6. Session History Expander
+            if st.session_state.disease_history:
+                with st.expander("🕒 Current Session Analysis History", expanded=False):
+                    hist_df = pd.DataFrame(st.session_state.disease_history)
+                    st.dataframe(hist_df, use_container_width=True, hide_index=True)
+
+            # 7. Supported Classes Technical Reference
+            with st.expander("📚 Classes reported by this model", expanded=False):
+                class_notes = {
+                    "Healthy": "Clean foliage without necrotic patches or fungal halos.",
+                    "Early Blight": "Alternaria solani: dark brown concentric-ring lesions, usually starting on lower leaves.",
+                    "Late Blight": "Phytophthora infestans: fast-spreading water-soaked dark lesions with pale margins.",
+                    "Septoria Leaf Spot": "Septoria lycopersici: small circular spots with dark borders and tan centres.",
+                }
+                reported = d_result.get("supported_classes") or []
+                if reported:
+                    for c_name in reported:
+                        st.markdown(f"- **{c_name}**: {class_notes.get(c_name, 'No description available.')}")
+                else:
+                    st.caption("The model did not report its class list.")
+                if d_result.get("model_version"):
+                    st.caption(f"Model version: {d_result['model_version']}")
+
+
+# ============================================================
 # WEATHER
 # ============================================================
 
@@ -2669,11 +3330,52 @@ elif page == "🧪 Recommendations":
 
 elif page == "🤖 AI Models":
 
+    ai_weed_st = weed_detector.model_status() if weed_detector else {"exists": False}
+    ai_dis_st = disease_detector.model_status() if disease_detector else {"exists": False}
+
     ui_hero(
         "AI models",
         "Machine-learning and deep-learning models evaluated for irrigation prediction.",
-        chips=[ui_chip(f"Active model: {ACTIVE_MODEL_NAME}", "ok"), ui_chip("Experimental, advisory only", "warn")],
+        chips=[
+            ui_chip(f"Active model: {ACTIVE_MODEL_NAME}", "ok"),
+            ui_chip("Experimental, advisory only", "warn"),
+            ui_chip("Weed model file found" if ai_weed_st["exists"] else "Weed model missing",
+                    "ok" if ai_weed_st["exists"] else "bad"),
+            ui_chip("Disease model file found" if ai_dis_st["exists"] else "Disease model missing",
+                    "ok" if ai_dis_st["exists"] else "warn"),
+        ],
     )
+
+    # Which model files actually exist on this computer (checked live, nothing assumed)
+    def _ai_file_row(component, path):
+        path = Path(path) if path else None
+        exists = bool(path) and path.is_file()
+        try:
+            shown = path.resolve().relative_to(PROJECT_ROOT).as_posix()
+        except (ValueError, AttributeError):
+            shown = str(path)
+        return {
+            "Component": component,
+            "File": shown,
+            "Found": "Yes" if exists else "No",
+            "Size": f"{path.stat().st_size / 1024:.0f} KB" if exists else "-",
+        }
+
+    with st.expander("🗂️ Model files on this computer", expanded=False):
+        ai_rows = [
+            _ai_file_row("Weed detector (YOLO)", ai_weed_st.get("path") or PROJECT_ROOT / "weed_detection" / "models" / "weed_detector.pt"),
+            _ai_file_row("Crop disease classifier", ai_dis_st.get("path")) if disease_detector else
+            {"Component": "Crop disease classifier", "File": "disease_detection/ package not installed", "Found": "No", "Size": "-"},
+            _ai_file_row("Irrigation model (11-feature)", PROJECT_ROOT / "training" / "models" / "random_forest_11feat.pkl"),
+            _ai_file_row("LSTM (14-feature research)", PROJECT_ROOT / "training" / "models" / "improved_lstm.pt"),
+            _ai_file_row("TCN (14-feature research)", PROJECT_ROOT / "training" / "models" / "tcn.pt"),
+            _ai_file_row("Transformer (14-feature research)", PROJECT_ROOT / "training" / "models" / "transformer.pt"),
+            _ai_file_row("Hardware LSTM (6-feature, optional)", PROJECT_ROOT / "training" / "models" / "hardware_lstm.pt"),
+            _ai_file_row("Hardware TCN (6-feature, optional)", PROJECT_ROOT / "training" / "models" / "hardware_tcn.pt"),
+            _ai_file_row("Hardware Transformer (6-feature, optional)", PROJECT_ROOT / "training" / "models" / "hardware_transformer.pt"),
+        ]
+        st.dataframe(pd.DataFrame(ai_rows), use_container_width=True, hide_index=True)
+        st.caption("Presence and size only. A file being present does not mean the model has been validated.")
 
     if get_model_comparison_rows is not None:
         model_comparison = pd.DataFrame(get_model_comparison_rows())
@@ -3545,6 +4247,37 @@ elif page == "🤖 AI Models":
             st.caption(f"Hardware buffer status: {hw_seq_res.get('blocker', 'No observation sequence available.')}")
     except Exception as e:
         st.error(f"Error auditing live sensor readiness: {e}")
+
+    # 5. Friend's 6-feature "hardware" sequence forecasters: reference results only
+    st.markdown("##### 🔮 6-feature sequence forecasters (from the shared project): test results")
+    st.caption(
+        "Trained on the public research dataset (lab soil sensors in % water content, rain in mm). "
+        "They are not run on live ESP32 data: the live 10-minute readings use different units "
+        "(relative %, 0/1 rain) and column names. Numbers below are read from their metrics files."
+    )
+    hw_rows = []
+    for _name in ("lstm", "tcn", "transformer"):
+        _mf = PROJECT_ROOT / "training" / "models" / f"hardware_{_name}_metrics.json"
+        _ck = PROJECT_ROOT / "training" / "models" / f"hardware_{_name}.pt"
+        if _mf.is_file():
+            try:
+                _md = json.loads(_mf.read_text(encoding="utf-8"))
+                hw_rows.append({
+                    "Model": _md.get("model_type", _name.upper()),
+                    "Test MAE (% moisture)": round(float(_md["test_mae"]), 2),
+                    "Persistence MAE ('stays the same')": round(float(_md["persistence_mae"]), 2),
+                    "Test R²": round(float(_md["test_r2"]), 3),
+                    "Checkpoint on this computer": "Yes" if _ck.is_file() else "No",
+                })
+            except Exception as exc:
+                hw_rows.append({"Model": _name.upper(), "Test MAE (% moisture)": f"metrics unreadable: {exc}"})
+    if hw_rows:
+        st.dataframe(pd.DataFrame(hw_rows), use_container_width=True, hide_index=True)
+        st.caption(
+            "Lower MAE is better. A model only adds value if its MAE is below the persistence baseline."
+        )
+    else:
+        st.info("Not installed: copy training/models/hardware_*_metrics.json from the shared project to show these results.")
 
 
 # ============================================================

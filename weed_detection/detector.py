@@ -114,7 +114,7 @@ def detect(model, data: bytes, conf: float = cfg.DEFAULT_CONFIDENCE,
     img = read_image(data)
     try:
         result = model.predict(source=img, conf=conf, imgsz=imgsz, verbose=False)[0]
-        annotated = result.plot(pil=True, conf=True, labels=True)   # RGB PIL image
+        annotated = result.plot(pil=True, conf=True, labels=True)
     except Exception as exc:  # noqa: BLE001 - e.g. CUDA out of memory, driver problems
         raise RuntimeError(f"Detection failed: {exc}") from exc
 
@@ -136,3 +136,4 @@ def detect(model, data: bytes, conf: float = cfg.DEFAULT_CONFIDENCE,
         "image_size": img.size,
         "confidence_threshold": conf,
     }
+

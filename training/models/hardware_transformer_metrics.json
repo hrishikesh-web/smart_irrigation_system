@@ -1,0 +1,21 @@
+{
+  "model_type": "Transformer",
+  "features": [
+    "soil_moisture",
+    "weather_temp",
+    "weather_humidity",
+    "weather_rain",
+    "hour",
+    "month"
+  ],
+  "feature_count": 6,
+  "parameters": 17857,
+  "epochs": 10,
+  "best_val_mse": 9.66033595323638,
+  "test_mae": 4.293722629547119,
+  "test_rmse": 6.473781585693359,
+  "test_r2": 0.9016762971878052,
+  "persistence_mae": 0.4124385178278106,
+  "persistence_rmse": 0.7640675626749585,
+  "checkpoint": "training/models/hardware_transformer.pt"
+}
